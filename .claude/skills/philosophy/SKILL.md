@@ -1,0 +1,93 @@
+---
+name: philosophy
+description: xp-harness の skill / agent を新規作成・改修するとき、または xp-harness そのものの設計判断 (取り込む / 取り込まない / 翻訳する) を考えるときに必ず発火させる skill。xp-harness の中核思想 (価値で導きつつ規律装置最小注入、エンジニアとして振る舞う、ペアプロ哲学、中央集権より decentralized、outside-in 例外なし、対話と自走の境界、INVEST の取捨、共創を目指す対話) を context に inject し、新規 skill / agent の設計判断や既存 skill / agent の改修判断を、xp-harness 思想と整合させるためのもの。
+---
+
+# xp-harness 思想と判断軸
+
+xp-harness の中核思想と判断軸を集約した skill。新規 skill / agent を作るとき、既存 skill / agent を改修するとき、または harness そのものの設計判断 (新しいアイデアを取り込むか / 取り込まないか / 翻訳して取り込むか) を考えるときに、ここに書かれた思想と判断軸に立ち返る。
+
+## 中核的な判断軸
+
+### 1. 「価値で導きつつ、ある程度の規律を注入」がいい塩梅
+
+- 全 skill に強い enforcement (HARD-GATE / Iron Law) を装着するのは過剰
+- 価値共有だけだと失敗モードが大きい規律 (TDD / 検証 / 根本原因) で漏れる
+- **失敗モードが大きい規律にだけ** Iron Law / Rationalization Table / Red Flags を注入
+
+実例:
+- `slice-tdd` の done-verifier 連携セクション (Iron Law + 言い訳対応表 + Red Flags) → 規律注入
+- `define-requirements` / `basic-design` の対話の型 → そこまで強い規律にしていない
+
+### 2. 「作業者ではなくエンジニアとしてあってほしい」
+
+- subagent は**ペアプロ相手**として使う (preload skill で哲学共有、独立視点で見るが命令服従ではない関係)
+- throwaway worker (controller-worker 分業、品質は外部 reviewer) は採用しない
+- main session も Engineer として振る舞う (Why が分からないままやらない、依頼者の解決策を疑う、代案を提案する)
+
+未来の判断で「これは worker 化を進める変更か / engineer 性を保つ変更か」を必ず問う。
+
+### 3. 「中央集権型は最上位の性能を超えない」
+
+- 中央集権型 (controller が全タスクを管理) は中央 (controller) の性能が上限になり、スケールしない
+- decentralized なほうが可能性が広がる
+
+AgentTeam 等の検討ではこの軸を見る。lead 固定 = 中央集権感が強い → 思想と微妙にズレる。ペアプロ的に弱める方向で使う。
+
+### 4. outside-in を例外なしルール
+
+- ストーリーの定義 (I/V/S/T) に従えば常に外側 (UI / API endpoint) がある
+- E2E から書くこと自体が「ユーザー視点で必要なものを surface させる論理設計プロセス」
+- outside-in は実装順テクニックであり、設計手法でもある
+
+詳細は `slice-tdd` の「実装方針: outside-in TDD」セクション。
+
+### 5. 対話と自走の境界
+
+- 要件定義 / 基本設計は対話必須 (Why / What / How を依頼者と固める)
+- 実装は基本自走 (slice-tdd の責務範囲)
+- 自走中でも止まる条件: 設計矛盾 / 仕様ヌケ / 想定超え / 高リスク操作 / 新たな設計判断
+
+「対話駆動で固めた前提を持って自走する」が xp-harness のモード。フル自走 (数時間 autonomous) には倒さない。
+
+### 6. INVEST の取捨 (story-slicing 設計の根拠)
+
+xp-harness は **I / V / S / T を採用、N を落とし、E は暗黙** とする:
+
+- N (Negotiable) を落とす理由: 自走と相性悪い (詳細を要件 / 設計フェーズで固める方針)
+- E (Estimable) を暗黙にする理由: N を落として固める = 自動で見積もれる状態になる
+
+Small は **「ユーザー価値を保ったまま分割可能な最小単位」** として価値ベースで判定 (技術的サイクル数ではない)。
+
+### 7. 「対話は共創を目指す、健全なコンフリクトで洗練する」
+
+依頼者との対話は「会話 (conversation)」ではなく「対話 (dialogue)」を成立させる:
+
+- **共創を目指す**: 一人で完成形を提示するのではなく、認識を揃えながら結論を共同で作る。互いの思考が交差することで、一人では到達できない結論や視点が生まれる
+- **健全なコンフリクトを価値共有として持つ**: 互いの意見をぶつけ合うことで案が洗練される。反対意見は歓迎するが、毎回相手に「反対あるか」を煽る必要はない (価値として共有していれば自然に出る)。**合意も健全** — 相手の方向性が筋がいいときは根拠を持って賛同する
+
+迎合を 2 種類意識する。両方とも「**自分の本当の判断を出していない**」が共通:
+
+1. 本当は反対 / 判断保留なのに賛成する (従来の迎合)
+2. 本当は賛成 / 判断保留なのに反対する (反対役を演じる、健全コンフリクトを歪めた版)
+
+「自分の本当の判断を根拠と共に出す」が核。具体動線は `dialogue-principles` skill に集約。
+
+## 取り込み / 取り込まないの判断 4 象限
+
+新 skill / agent / 判断装置を harness に取り込むか考えるとき、以下の 4 象限で見る:
+
+| 象限 | 説明 | 該当例 |
+|---|---|---|
+| **直接採用 OK** (哲学衝突なし) | 失敗モードが大きい規律にだけ装置を注入 | Iron Law / Red Flags / Rationalization Table パターン、verification 系、systematic-debugging 系 |
+| **xp-harness のフローに翻訳して採用** | 既存の thought に合わせて取り込む | subagent prompt template の supporting file 化、bite-sized task 粒度の slice-tdd 連携 |
+| **哲学衝突、採用 NG** | 思想と相反するので採用しない | SessionStart hook 全面採用 (hook 不採用方針)、subagent throwaway 模式 (ペアプロ哲学と衝突)、全 skill への HARD-GATE 装着 |
+| **痛みが明確化していない / スコープ外** | 必要性が立証されていない | 自動 worktree (Git 運用が固まってから)、parallel agent dispatch、AgentTeam の本格導入 |
+
+新アイデアは必ずこの象限分けで判断する。象限 3 (哲学衝突) のものは「採用したい」と感じても**踏みとどまる**。象限 4 は痛みが見えてから検討する。
+
+## 引継ぎ時に最も伝えたい 1 文
+
+> **xp-harness の XP エンジニアは「価値を共有した自律」で動く。失敗モードが大きい部分にだけ規律装置を注入し、それ以外は価値で導く。subagent はワーカーではなくペアプロ相手。**
+
+判断に迷ったら、この文に立ち返る。

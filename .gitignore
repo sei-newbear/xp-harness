@@ -1,0 +1,21 @@
+# APM
+apm_modules/
+.apm/cache/
+apm.lock.yaml
+
+# Local config / env / secrets
+.env
+.env.*
+*.local.*
+settings.local.json
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*~
+
+# Logs
+*.log

@@ -1,0 +1,14 @@
+name: xp-harness
+version: 0.1.0
+description: XP の価値共有で AI コーディングエージェントを動かすハーネス — 要件定義 → 基本設計 → 実装の段階駆動スキル、ペアプロのサブエージェント、改修者向けの思想スキル。APM 配布。
+author: sei-newbear
+# Which agent platforms to deploy to.
+# Resolution order: --target flag > this field > auto-detect from filesystem.
+# Accepted values: copilot, claude, cursor, opencode, codex, gemini, windsurf, all
+targets:
+- claude
+dependencies:
+  apm: []
+  mcp: []
+includes: auto
+scripts: {}
