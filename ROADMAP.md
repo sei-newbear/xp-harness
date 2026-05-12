@@ -50,6 +50,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 38 | GitHub Actions で release notes 自動化 (CHANGELOG.md 廃止、conventional commits + tag から自動生成) | リリース運用、初回 tag 時に整備 |
 | 39 | CODE_OF_CONDUCT.md の追加 (OSS 慣行) | 後回し可、PR / Issue が来始めた時 |
 | 40 | SECURITY.md の追加 (将来必要になったら) | 実行可能コードが増えたら / 脆弱性報告が現実味を帯びたら |
+| 41 | e2e SKILL.md 本文の「日本語名」表記を「natural language」に揃える | レビューでの気づき (description は更新済、本文未更新) |
 
 各 TODO の詳細は以下のセクション参照。
 
@@ -791,6 +792,27 @@ GitHub にはデフォルトで Security Advisory 投稿フォームが存在す
 1. 実行可能コード (`.github/workflows/`、CLI script 等) が harness に増えたか確認
 2. `SECURITY.md` を root に配置 (Contributor Covenant の SECURITY 雛形、または GitHub の Security Advisory ガイド準拠)
 3. README から link
+
+---
+
+## TODO 41: e2e SKILL.md 本文の「日本語名」表記を「natural language」に揃える
+
+### 状況
+
+設計 §4.6 で「日本語ヘルパー」→「natural language ヘルパー」(project の言語選択を尊重) と方針確定し、`.apm/skills/e2e/SKILL.md` の description および `.apm/agents/e2e-reviewer.md` 本文は更新済。一方 SKILL.md 本文の見出し / 説明文 / 手順には「日本語名」表記が残存している:
+
+- L33: `### 2. 操作はヘルパー関数（日本語名）に切り出す`
+- L37 周辺: `**関数名は日本語で意図を表現**`
+- L191 周辺: 「日本語名」言及
+
+description と本文の表記不整合は読み手の混乱を招くため、本文も「natural language」に揃える。
+
+### 再開時の起点
+
+1. SKILL.md 本文の該当 3 箇所を grep で再確認
+2. 「日本語名 / 日本語で」表現を「natural language 名 / project の言語で」等に置換
+3. 例として残っている日本語関数名 (`taro` 等の dummy 値以外) を、必要に応じて project の言語の自由度を強調する文言に調整
+4. e2e-reviewer.md / philosophy SKILL.md など関連 file との表記整合を最終確認
 
 ---
 
