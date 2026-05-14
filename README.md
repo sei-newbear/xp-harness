@@ -40,8 +40,11 @@ xp-harness/
 # APM CLI のインストール (未 install の場合)
 curl -sSL https://aka.ms/apm-unix | sh
 
-# xp-harness を取り込む
-apm install <owner>/xp-harness#v0.1.0 --target claude
+# xp-harness を取り込む (SSH)
+apm install git@github.com:sei-newbear/xp-harness.git#v0.1.0 --target claude
+
+# xp-harness を取り込む (HTTPS)
+apm install https://github.com/sei-newbear/xp-harness#v0.1.0 --target claude
 
 # CLAUDE.md を生成 (harness の instruction + 自前 instruction を bundle)
 apm compile --target claude
@@ -63,8 +66,10 @@ mv CLAUDE.md .apm/instructions/local-rules.instructions.md
 # ---
 # (中身)
 
-# その後 install + compile
-apm install <owner>/xp-harness#v0.1.0 --target claude
+# その後 install + compile (SSH)
+apm install git@github.com:sei-newbear/xp-harness.git#v0.1.0 --target claude
+# または (HTTPS)
+apm install https://github.com/sei-newbear/xp-harness#v0.1.0 --target claude
 apm compile --target claude
 ```
 
@@ -146,8 +151,10 @@ apm outdated
 # 最新 ref に追従
 apm install --update --target claude
 
-# 特定 version に固定
-apm install <owner>/xp-harness#v0.2.0 --target claude --force
+# 特定 version に固定 (SSH)
+apm install git@github.com:sei-newbear/xp-harness.git#v0.2.0 --target claude --force
+# または (HTTPS)
+apm install https://github.com/sei-newbear/xp-harness#v0.2.0 --target claude --force
 
 # CLAUDE.md 再生成
 apm compile --target claude
