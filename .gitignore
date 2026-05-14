@@ -3,6 +3,12 @@ apm_modules/
 .apm/cache/
 apm.lock.yaml
 
+# self-host symlinks (scripts/setup-dev.sh で生成、改修者個人の dev 環境)
+# philosophy は本物ファイルで git tracked なので除外
+.claude/skills/*
+!.claude/skills/philosophy/
+.claude/agents/
+
 # Local config / env / secrets
 .env
 .env.*

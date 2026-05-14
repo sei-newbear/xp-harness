@@ -29,3 +29,13 @@ skill の新規作成 / 改修時は、description と本文の両方を上記 2
 ### Why (このルールを作った経緯)
 
 2026-05-11 の ROADMAP レビューで依頼者から明示: 「ディスクリプションはインタフェースなので、具体の話はNO」「git-workflow の .apm なんちゃらはこのスキルが展開されたら、関係なくなるので、NG。apm compile とかも意識したらあかん」。原則 2 は優先度高指定 (ROADMAP TODO 31)。
+
+---
+
+## Main instruction の取り込み (self-host / dogfooding)
+
+xp-harness 本体の main instruction (consumer に配信される運用ルール) を改修者環境でも有効にするため、起動時に取り込む。改修者は `.apm/instructions/main.instructions.md` を直接編集すれば、Claude Code を再起動するだけで反映される (build step なし)。
+
+`.apm/skills/` の各 skill と `.apm/agents/` の各 subagent は `scripts/setup-dev.sh` が `.claude/skills/<x>` / `.claude/agents/<x>.md` への symlink を作って認識させる (philosophy skill は元から `.claude/skills/philosophy/` で git tracked、対象外)。
+
+@.apm/instructions/main.instructions.md
