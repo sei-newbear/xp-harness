@@ -175,12 +175,15 @@ harness を改修するための前提:
 
 ```bash
 cd /path/to/xp-harness
-claude                                # philosophy skill が認識される
+bash scripts/setup-dev.sh             # 初回 / skill 追加時に叩く (冪等)
+claude                                # philosophy + .apm/ 配下の skill / agent / main instruction が認識される
 # .apm/ 配下を編集 (skill / agent / instruction)
-# 動作確認は別 dir の dummy repo で apm install + apm compile
+# 改修した skill / agent は Claude Code 再起動 (or /skills) で即時反映
 ```
 
-self-host (`apm install . --target claude`) は **APM の循環依存検出により実現不可** ([ROADMAP](./ROADMAP.md) #1)。改修者は `.apm/<sub>/<file>` を Read tool で参照しながら作業する。
+`scripts/setup-dev.sh` が `.apm/skills/<x>` → `.claude/skills/<x>` / `.apm/agents/<x>.md` → `.claude/agents/<x>.md` の symlink を作る。`.apm/instructions/main.instructions.md` は CLAUDE.md からの `@` transclusion で取り込まれる。philosophy skill (`.claude/skills/philosophy/`) は APM 管理外で git tracked、symlink 対象外。
+
+正式な self-host (`apm install . --target claude`) は **APM の循環依存検出により実現不可** ([ROADMAP](./ROADMAP.md) #1)。上記の symlink 方式は Stage 0 の dogfooding 用 暫定対応。
 
 ## Roadmap / TODO
 
