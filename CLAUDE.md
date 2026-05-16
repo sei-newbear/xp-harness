@@ -35,6 +35,29 @@ skill の新規作成 / 改修時は、description と本文の両方を上記 3
 
 ---
 
+## Description の書き方 (公式推奨)
+
+skill の frontmatter `description` は「9 割の skill 発火失敗は description の品質に起因」(Claude Code 公式) と言われる重要 field。以下を守る:
+
+- **third person のみ** (「I can」「You can」禁止)
+- **What (何をするか) + When (いつ使うか) の 2 層構成**
+- **Key use case (What) を最初に置く** — skill 数が増えると character budget で末尾が切られるため
+- **最大 1,024 字、実質 200-300 字推奨** (短いほど発火精度高い)
+- **具体ツール / API 名を避ける** (原則 1 と整合): framework-agnostic な表現で書く
+- description が短く済まない場合、`when_to_use` frontmatter field を使う選択肢もある (Claude Code 固有)
+
+Good:
+
+    description: Analyze Excel spreadsheets, create pivot tables, generate charts. Use when analyzing Excel files, spreadsheets, tabular data.
+
+Bad:
+
+    description: Use openpyxl to process spreadsheets
+
+参考: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+
+---
+
 ## Main instruction の取り込み (self-host / dogfooding)
 
 xp-harness 本体の main instruction (consumer に配信される運用ルール) を改修者環境でも有効にするため、起動時に取り込む。改修者は `.apm/instructions/main.instructions.md` を直接編集すれば、Claude Code を再起動するだけで反映される (build step なし)。
