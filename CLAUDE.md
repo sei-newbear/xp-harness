@@ -6,7 +6,7 @@
 
 ## skill 設計の境界原則 (暫定、固まったら philosophy / skill-design-rules 等に昇格予定)
 
-xp-harness の skill (`.apm/skills/<name>/SKILL.md`) を作る・改修するときの 2 つの境界原則。
+xp-harness の skill (`.apm/skills/<name>/SKILL.md`) を作る・改修するときの 3 つの境界原則。
 
 ### 原則 1: skill の frontmatter `description` は interface — 具体の話を入れない
 
@@ -22,13 +22,16 @@ xp-harness の skill (`.apm/skills/<name>/SKILL.md`) を作る・改修すると
 - **正しい場所**: APM 機構の話は README / apm.yml / APM 側 instruction (`.apm/instructions/`) に書く。skill 本文は APM 非依存の汎用表現で書く。
 - override の話を skill 本文に残したいなら「project 固有のルールで override 可能 (override 方法はインストール先 agent の仕様に従う)」程度の抽象表現にとどめる。
 
+### 原則 3: description は発火条件、本文は発火後の振る舞いを書く
+
+- skill の **発火** は Claude Code の skill 機構によって決まる: frontmatter `description` (および skill 名) を main session が読み、文脈にマッチしたら skill 本文が読み込まれる。発火を決めるのは description であって、本文ではない。
+- 本文は発火後の振る舞いガイド: skill が呼ばれた後の対話進行・規律・成果物の書式などを書く場所。
+- **NG 例**: 「main session がいつ skill を呼ぶか」「どの観測サインで呼ぶか」のような発火条件を本文側に書く。逆に「発火後の対話手順」「成果物の書式」を description 側に書く。
+- 判断軸: 「これは skill が呼ばれる前に効く話か (= description)、呼ばれた後に効く話か (= 本文)」を区別する。混ぜると、skill が発火しない (= 発火条件が本文にあると Claude Code は読まない) / 振る舞いが安定しない (= 振る舞いが description にあると skill 利用側に伝わらない)。
+
 ### 適用タイミング
 
-skill の新規作成 / 改修時は、description と本文の両方を上記 2 原則でチェックする。違反を見つけたら指摘 or 修正候補として提示する。skill-creator 系の作業に入る前に必ず思い出すこと。
-
-### Why (このルールを作った経緯)
-
-2026-05-11 の ROADMAP レビューで依頼者から明示: 「ディスクリプションはインタフェースなので、具体の話はNO」「git-workflow の .apm なんちゃらはこのスキルが展開されたら、関係なくなるので、NG。apm compile とかも意識したらあかん」。原則 2 は優先度高指定 (ROADMAP TODO 31)。
+skill の新規作成 / 改修時は、description と本文の両方を上記 3 原則でチェックする。違反を見つけたら指摘 or 修正候補として提示する。skill-creator 系の作業に入る前に必ず思い出すこと。
 
 ---
 
