@@ -52,6 +52,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 40 | SECURITY.md の追加 (将来必要になったら) | `harness-repo` | `リリース運用` | 実行可能コードが増えたら / 脆弱性報告が現実味を帯びたら |
 | 41 | e2e SKILL.md 本文の「日本語名」表記を「natural language」に揃える | `e2e-skill` | `interface純化` | レビューでの気づき (description は更新済、本文未更新) |
 | 42 | pre-implementation-reviewer を要件定義のみ段階でも呼べるよう description / 本文を明示改修 | `pre-impl-reviewer` | `interface純化`, `責務境界` | reviewer 実証で気づき (2026-05-15) |
+| 43 | xp-harness 既存 skill の description を公式推奨 (200-300 字 / What+When / third person) に短縮 | (全 skill) | `interface純化` | 公式 best-practice 調査で気づき (2026-05-16) |
 
 ### タグの読み方
 
@@ -873,6 +874,30 @@ ROADMAP TODO 25 (ふりかえり skill 新設) の要件定義段階で「要件
 2. 本文の「レビューの観点」section に「要件のみ段階で呼ばれた場合は『設計判断の妥当性 / アーキ / データモデル / シーケンス』をスキップ」を明示
 3. ROADMAP TODO 25 のレビュー実例を参考に、要件のみで呼ぶときの prompt 規約 (or main session の呼び方規約) も整理
 4. 他 subagent (`code-reviewer`, `e2e-reviewer`, `done-verifier`) でも「両方揃え前提」のような暗黙の呼び出し前提が無いか並行確認
+
+---
+
+## TODO 43: xp-harness 既存 skill の description を公式推奨に短縮
+
+### 状況
+
+ROADMAP TODO 25 (ふりかえり skill) の basic-design 議論で claude-code-guide が調査した結果、Claude Code 公式 (<https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>) の description ベストプラクティスは:
+
+- third person のみ
+- What + When の 2 層構成
+- Key use case を最初に置く (skill 数が増えると character budget で末尾が切られるため)
+- 最大 1,024 字、実質 200-300 字推奨 (短いほど発火精度高い)
+- 具体ツール / API 名を避ける (framework-agnostic)
+
+一方、xp-harness 既存 skill の description は 500-900 字台で公式推奨レンジから外れている (例: `define-requirements`, `slice-tdd`, `git-workflow`)。「9 割の skill 発火失敗は description の品質」と公式が明示する重要 field なので、skill 数が増えるほど効いてくる負債。CLAUDE.md の「Description の書き方 (公式推奨)」section と整合する形で短縮。
+
+### 再開時の起点
+
+1. 全 skill (`.apm/skills/*/SKILL.md`) の description を grep で列挙、各字数を測定
+2. 公式推奨レンジ (200-300 字) から外れる skill を優先順位付け
+3. 1 skill ずつ description を書き直す: What + When の 2 層構成 / Key use case を最初 / 具体名除去 / third person
+4. 短くした description で発火サインが落ちないか実セッションで観察
+5. 必要に応じて `when_to_use` frontmatter field (Claude Code 固有) を併用
 
 ---
 
