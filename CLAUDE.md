@@ -58,6 +58,19 @@ Bad:
 
 ---
 
+## 出力前に立ち止まる (機械的処理に流されない)
+
+skill / description / 本文 / 要件 → description の変換などを書くとき、出力前に必ず立ち止まる:
+
+- 要件 → description の変換は **抽象化作業**。機械的コピーしない (要件は具体を含むのが正しい、description は抽象が正しい、性質が違う)
+- 各文を「これは abstract か / 具体な How か」「description に書くか / 本文に書くか」と都度問う
+- 既存例 (xp-harness 既存 skill 等) の見た目に引っ張られない。ルールが先、例は参考
+- 「ルーチン作業」と分類しそうな瞬間こそ要注意 (= そこで推論を起動する)
+
+意図: 規律装置の最小注入。「考えるべき」と気づくトリガーを常駐させて、機械的処理に流れる癖を抑える。
+
+---
+
 ## Main instruction の取り込み (self-host / dogfooding)
 
 xp-harness 本体の main instruction (consumer に配信される運用ルール) を改修者環境でも有効にするため、起動時に取り込む。改修者は `.apm/instructions/main.instructions.md` を直接編集すれば、Claude Code を再起動するだけで反映される (build step なし)。
