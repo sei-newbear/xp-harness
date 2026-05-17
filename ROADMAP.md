@@ -10,7 +10,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 
 | ID | TODO | 対象 | 意味 | 温度感 |
 |---|---|---|---|---|
-| 1 | self-host (dogfooding) の実現 | `harness-repo`, `apm-mechanism` | `自己適用` | 開発周り、優先度低 |
+| 1 | (欠番、完了として削除 2026-05-17 — self-host は一時対応 `scripts/setup-dev.sh` + symlink で十分、本格対応は痛みが見えてから新規 TODO で起こす) | — | — | — |
 | 2 | `.apm/instructions/main.md` の section 分割精査 | `main-instructions` | `構造改修` | 中身を精査しながら判断 |
 | 3 | cross-agent 対応 (Cursor 等への移植) | (全体) | `他エージェント対応` | 痛みが見えてから |
 | 4 | 初回 install 時の CLAUDE.md 退避カスタムコマンド | `apm-mechanism` | `新規作成`, `機能拡張` | 利用者の事故防止 |
@@ -34,7 +34,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 22 | main.instructions.md のフェーズフロー section の削除またはスリム化 | `main-instructions` | `重複削減` | レビューでの気づき (優先度未判断) |
 | 23 | main.instructions.md の各フェーズの振る舞い section の skill 重複解消検討 | `main-instructions` | `重複削減` | レビューでの気づき (優先度未判断) |
 | 24 | main.instructions.md 全体の skill 重複洗い出し / 必要なものへの絞り込み (章ごと + 全体) | `main-instructions` | `重複削減` | レビューでの気づき (優先度未判断) |
-| 25 | ふりかえり skill の新設 (作業完了後にユーザーへふりかえりを問いかけ、改善点を自発的に促す) | (新規) | `新規作成` | レビューでの気づき (優先度未判断) |
+| 25 | (欠番、完了として削除 2026-05-17 — ふりかえり skill 本体は実装・リリース完了。開発中に出た派生課題は 45/46/47/48/49 として完全独立 TODO で追跡) | — | — | — |
 | 26 | basic-design / define-requirements の末尾「/clear で次フェーズへ」案内の要否検討 | `define-requirements`, `basic-design` | `責務境界` | レビューでの気づき (優先度未判断) |
 | 27 | E2E と対になる実装 skill の新設 (実装規約 + architecture を担う) | (新規) | `新規作成` | レビューでの気づき (優先度未判断) |
 | 28 | define-requirements / basic-design と dialogue-principles の重複整理 | `dialogue-principles`, `define-requirements`, `basic-design` | `重複削減` | レビューでの気づき (優先度未判断) |
@@ -56,6 +56,9 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 44 | skill 編集レビュー subagent (skill-reviewer 仮称) の新設 (機械的処理対策の本格版、効果が薄い時の参照点) | (新規 subagent) | `新規作成`, `責務境界` | 機械的処理失敗の振り返りで気づき (2026-05-17) |
 | 45 | ふりかえり skill 発火検知の既存 skill フック (運用結果次第で着手、main session の文脈判断で検知できないと判明したら) | `define-requirements`, `slice-tdd`, 他 | `機能拡張`, `責務境界` | ふりかえり skill basic-design で派生 (2026-05-17) |
 | 46 | main instruction のフェーズフローに「ふりかえり」を追加 (運用結果次第で着手) | `main-instructions` | `機能拡張`, `構造改修` | ふりかえり skill basic-design で派生 (2026-05-17) |
+| 47 | CLAUDE.md の規律を「判断軸」から「具体 action リズム」(TDD 的手順チェックリスト) に書き直す | `harness-repo` (CLAUDE.md) | `構造改修`, `方法論導入` | ふりかえりで気づき (2026-05-17)、47/48/49 セット対応で **Tier 1** |
+| 48 | skill 編集時の hook ベース自動チェック (skill 編集で description / 本文の規律違反を自動で止める) | `harness-repo` (skill 編集ワークフロー) | `機能拡張` | ふりかえりで気づき (2026-05-17)、47/48/49 セット対応で **Tier 1** |
+| 49 | CLAUDE.md の規律 section の整理 (似た規律の統合 / 規律間の関係を 1 枚のマップで明示 / 効いていない規律の削除) | `harness-repo` (CLAUDE.md) | `重複削減`, `構造改修` | ふりかえりで気づき (2026-05-17)、47/48/49 セット対応で **Tier 1** |
 
 ### タグの読み方
 
@@ -74,19 +77,26 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
   - `方法論導入`: eval / TDD / debug 等の方法論導入
 - **温度感**: 着手判断軸 (現時点での主観的優先順位)。タグとは別軸。
 
-### 現在の Tier 1 (着手対象、6 件)
+### 現在の Tier 1 (着手対象、7 件)
 
-選定軸: **「改善サイクルを回せるもの」** + **設計負債で依頼者が明示的に高優先指定したもの**。
+選定軸: **「改善サイクルを回せるもの」** + **設計負債で依頼者が明示的に高優先指定したもの** + **ふりかえり由来の改善 (利用者影響なし)**。
 Tier 2 / Tier 3 は未確定 (痛みが顕在化してから棚卸し)。
 
 | ID | TODO | 系統 |
 |---|---|---|
-| 1 | self-host (dogfooding) の実現 | 改善サイクル: 実利用で痛みを surface |
-| 25 | ふりかえり skill 新設 | 改善サイクル: 人手による retrospective |
 | 31 | git-workflow 本文 APM 言及除去 | 設計負債 (`優先度高`) |
 | 32 | slice-tdd 名前再検討 | 設計負債 (`優先度高め`) |
 | 35 | slice-tdd 実装 skill 参照指示 | 設計負債 (`優先度高め`、TODO 27 の繋ぎ) |
 | 36 | code-reviewer / e2e-reviewer に Skill tool 追加 | 設計負債 (依頼者「これは意図してない」明示) |
+| 47 | CLAUDE.md 規律の action リズム化 | ふりかえり由来 (47/48/49 セット対応) |
+| 48 | skill 編集 hook 自動チェック | ふりかえり由来 (47/48/49 セット対応) |
+| 49 | CLAUDE.md 規律 section 整理 | ふりかえり由来 (47/48/49 セット対応) |
+
+**47/48/49 はセットで対応**: ふりかえり.md (`docs/working/retrospective-skill/ふりかえり.md`) の root cause 分析「規律を判断軸として持っているだけで具体 action / 強制チェックポイントが無い + 規律間の関係性が整理されていない」への複合対応。利用者影響なしの harness 内部改善。
+
+**完了で削除したもの (2026-05-17、ID は欠番として保持)**:
+- **TODO 1** (self-host): 一時対応 (`scripts/setup-dev.sh` + symlink) で十分。本格対応は痛みが見えてから新規 TODO で起こす
+- **TODO 25** (ふりかえり skill 新設): skill 本体 (2026-05-17 リリース済) で完了。開発中に出た派生課題は 45/46/47/48/49 として完全独立 TODO で追跡
 
 **Tier 1 に上げなかった改善サイクル系項目**:
 - **TODO 12** (skill TDD/eval 方法論) / **TODO 14** (philosophy loading 仕組み): 「明確な課題が見えたら着手」軸で Tier 3 残留。バージョニング機構があるので壊れることよりリリース速度を優先、かつコーディングエージェント向け TDD 方法論自体が業界で確立していないため、xp-harness が先に整備するコストが高い (2026-05-14 判断)。
@@ -95,26 +105,9 @@ Tier 2 / Tier 3 は未確定 (痛みが顕在化してから棚卸し)。
 
 ---
 
-## TODO 1: self-host (dogfooding) の実現
+## TODO 1: (欠番)
 
-### 状況
-
-harness 改修者が `/path/to/xp-harness/` で Claude Code を起動したとき、`.apm/skills/<all>/SKILL.md`、`.apm/agents/<all>.md`、`.apm/instructions/main.instructions.md` を context に取り込みたい。理想は `apm install . --target claude` の self-host で `.claude/skills/` 等に deploy することだが、**APM の循環依存検出により拒否される**。
-
-現状の harness 改修者の Claude Code は `.claude/skills/philosophy/SKILL.md` (元から git 管理されている) のみ skill として認識する。他の skill / agent / instruction は Read tool で参照する必要がある。
-
-### 取り得る代替手段
-
-- **案 a: 手動 deploy script** (`scripts/setup-dev.sh` で `.apm/skills/` を `.claude/skills/` に copy + `apm compile` で CLAUDE.md 生成)
-- **案 b: symlink** (`.apm/skills/<x>` → `.claude/skills/<x>`、OS 依存、git 管理が煩雑)
-- **案 c: 別作業 repo** で `apm install xp-harness` (循環依存を回避するが、別 repo の維持コスト)
-- **案 d: APM 側に self-install サポートを upstream contribute** (大きい作業)
-
-### 再開時の起点
-
-1. 案 a / b / c のどれが最もコストパフォーマンス高いか propose-options で議論
-2. 採用案で `scripts/setup-dev.sh` 等を実装
-3. README の Development setup section に手順を追加
+完了として削除 (2026-05-17)。一時対応 (`scripts/setup-dev.sh` + symlink) で改修者の dogfooding ニーズは満たされた。本格的な `apm install` self-host が必要になったら新規 TODO で起こす。
 
 ---
 
@@ -515,29 +508,9 @@ TODO 2 (section 分割) とは関心が異なる: TODO 2 は「分割」、TODO 
 
 ---
 
-## TODO 25: ふりかえり skill の新設 (作業完了後にユーザーへふりかえりを問いかけ、改善点を分析・報告する)
+## TODO 25: (欠番)
 
-### 状況
-
-xp-harness にふりかえり (retrospective) を駆動する skill が無い。作業 (ユーザーストーリー / TDD サイクル / セッション 等) が完了したタイミングで、main session 側がユーザーに「ふりかえりませんか？」と自発的に問いかけ、改善点を引き出す skill を新設したい。
-
-XP のペアプロ / イテレーションのリズムにおいてふりかえりは中核要素なので、harness 思想と整合する。現状はユーザー側がふりかえりを切り出さないと改善点が拾えない状態。
-
-### 責務境界 (重要)
-
-この skill の責務は **分析 + 改善点の報告までに限定** する。実際の skill / agent 修正は行わない。理由は 2 つ:
-
-- **責務分離**: 修正は専門の skill / agent (例: `skill-creator`, または harness 改修者向けの editor agent) に委譲。レトロスペクティブと同じく、ふりかえり自体は「気づきを出す場」であって「直す場」ではない。
-- **OSS 配布前提**: xp-harness は APM 経由で OSS として skill セットを配布するリポジトリ。consumer 環境では harness の skill 本体を直接書き換えるのは想定外なので、どっちみち「報告 → harness 改修者にフィードバック」のフローしか取れない。報告フォーマットを明確にすることが肝。
-
-### 再開時の起点
-
-1. 発火タイミングを定義 (作業完了 = 何をもって完了とするか: ストーリー Done / コミット完了 / セッション終了 等)
-2. 問いかけ方の対話設計 (押し付けず、しかし忘れさせない言い方) — `dialogue-principles` skill と整合
-3. 引き出す観点を定義 (Keep / Problem / Try? それとも YWT? 文化に合わせる)
-4. 改善点の **報告先 / 報告フォーマット** を決める: ROADMAP に TODO として追記 / `docs/working/<title>/ふりかえり.md` に残す / consumer から harness 改修者へ届けるチャネル (issue / PR / Slack 等) など
-5. 修正は専門 skill / agent に委譲する受け渡し方を設計 (どの形で投げるか、どの粒度で投げるか)
-6. skill 名 / description を決め、`skill-creator` で雛形作成
+完了として削除 (2026-05-17)。`retrospective` skill 本体と `pre-implementation-reviewer` の要件段階対応 (TODO 42) を含めて実装・リリース完了。docs/working/retrospective-skill/ に要件定義 / 基本設計 / ふりかえり.md を残す。開発中に出た派生課題は 42 / 43 / 44 / 45 / 46 / 47 / 48 / 49 として完全独立 TODO で追跡。
 
 ---
 
@@ -966,6 +939,84 @@ TODO 22 (フェーズフロー section の削除 or スリム化) / TODO 23 (各
 1. ふりかえり skill 運用結果を観察、main の発火が安定しているか評価
 2. 不安定と判明したら、main instruction の方針整理 (TODO 22 / 23 / 24) と並走させながら、フェーズフロー section に「ふりかえり」を追加する判断
 3. 追加する場合の書き方: 既存「要件定義 → 基本設計 → 実装」に「→ ふりかえり」を 1 行追加、または別 section として独立
+
+---
+
+## TODO 47: CLAUDE.md の規律を「判断軸」から「具体 action リズム」に書き直す
+
+### セット対応の位置づけ
+
+TODO 47 / 48 / 49 は **セットで対応する 1 つの改善** として扱う。共通の root cause は「規律を判断軸として持っているだけで具体 action / 強制チェックポイントが無い + 規律間の関係性が整理されていない」(`docs/working/retrospective-skill/ふりかえり.md` の深掘り 1 参照)。利用者影響なしの harness 内部改善なので、3 つ揃ったタイミングで実装する。
+
+### 状況
+
+CLAUDE.md の skill 設計関連 section (「skill のメンタルモデル」「skill 設計の境界原則」「Description の書き方 (公式推奨)」「出力前に立ち止まる」) は **判断軸 / 観点 / 概念** として書かれており、具体的な action 手順 (= 「N. 〜する」「M. 〜する」のチェックリスト) になっていない。
+
+TDD は「テスト先書き → 最小実装 → リファクタ → コミット」の action リズムが揃っており、概念名だけで動く強制力を持つ。一方 xp-harness の skill 設計規律は判断軸のみで、main session の自発的チェックに依存している。結果として skill 改修時に「機械的処理に流れて立ち止まれない」失敗が再発した (= ふりかえり.md の深掘り 1 で顕在化)。
+
+### 再開時の起点
+
+1. 対象 section を特定: CLAUDE.md の「skill のメンタルモデル」「skill 設計の境界原則」「Description の書き方」「出力前に立ち止まる」
+2. 各 section を「具体的な action 手順」として書き直す案を出す。例: 「skill 改修時のチェックリスト: (a) これは load 前か load 後か / (b) description / 本文 のどちらに書くか / (c) 他文書で既出か / (d) 抽象化レベルは適切か」を順に通す手順
+3. TODO 49 (CLAUDE.md 規律 section 整理) と並走させ、整理した後に action リズム化するのか / action リズム化しながら整理するのか順序を決める
+4. TODO 48 (skill 編集 hook) と接続: action リズムをチェックリスト化できれば hook 側の自動チェック項目に転写しやすい
+
+---
+
+## TODO 48: skill 編集時の hook ベース自動チェック
+
+### セット対応の位置づけ
+
+TODO 47 / 48 / 49 セット対応の一部 (= TODO 47 のチェックリストを hook で自動化、TODO 49 で整理された規律を hook の参照対象にする)。
+
+### 状況
+
+skill 編集時の規律違反 (description に具体名 / 本文に発火条件 / 既出情報の二重書き 等) を main session の自発チェックだけに任せると、機械的処理に流れて違反が混入する。CLAUDE.md の「skill 設計の境界原則」「Description の書き方」「出力前に立ち止まる」は **判断軸として存在するが強制力が無い**。
+
+外から見る (= 外部から自動的に止まる仕組み) を 1 段噛ませて、main session の judgement が起動しない場面でも違反を捕捉する。ふりかえり.md の深掘り 1 「強制チェックポイント (= 外から見る) が必要」への対応。
+
+### 取り得るアプローチ
+
+- **案 a: file edit hook** (`.claude/settings.json` 等で `.apm/skills/*/SKILL.md` への Edit / Write 後にチェックスクリプトを起動)
+- **案 b: pre-commit hook** (skill ファイル変更時に lint 走らせる)
+- **案 c: subagent 必須化** (TODO 44 の skill 編集レビュー subagent を skill 編集後に自動で呼ぶ)
+- **案 d: skill eval セット** (TODO 12 と接続、skill 発火が期待通りかを機械的検証)
+
+a / b は機械的 lint で安く速い、c / d は判断系で重いが精度高い。組み合わせも候補。
+
+### 再開時の起点
+
+1. チェック対象を具体化 (TODO 47 のチェックリストが入力になる): description 字数 / third person / 具体名 ban list / 本文の APM 機構言及 ban list / 既出情報の重複 etc
+2. 案 a〜d を propose-options で比較、コスト / 精度 / 守備範囲で選定
+3. TODO 44 / 12 と責務分担を整理 (= 機械的 lint と subagent レビューと eval の境界)
+4. 選定案で実装、最初は warning ベースで運用して誤検知を減らしてから enforce に上げる
+
+---
+
+## TODO 49: CLAUDE.md の規律 section の整理
+
+### セット対応の位置づけ
+
+TODO 47 / 48 / 49 セット対応の一部 (= 整理した後に TODO 47 で action リズム化、TODO 48 の hook 参照対象を確定)。3 つの中では最初に着手する候補 (= 整理が終わってから action リズム化 / hook 化の方が手戻りが少ない)。
+
+### 状況
+
+CLAUDE.md には skill 設計関連の規律が複数 section に分散している:
+
+- 「skill のメンタルモデル」(skill の構造 / 動作フロー / 判断軸)
+- 「skill 設計の境界原則」(原則 1 / 2 / 3)
+- 「Description の書き方 (公式推奨)」
+- 「出力前に立ち止まる」
+
+これらは独立 section として並んでおり、規律間の関係 / 優先順位 / 統合された全体像が見えにくい。個別判断時に「まずどの規律を適用するか」が曖昧で、選択コストが上がる (= ふりかえり.md の深掘り 1「規律の数が多すぎ / 規律間の関係が見えない」への対応)。
+
+### 再開時の起点
+
+1. 各 section の規律を粒度を揃えて列挙 (= 規律のフラットなリスト化)
+2. 似た規律を統合 (= 重複 / 近接の merge): 例えば「description には具体名を入れない」が原則 1 と「Description の書き方」両方にあれば single source of truth に
+3. 規律間の関係を 1 つの図 / マップで明示 (= どの判断ステップでどの規律が効くか、依存関係)
+4. 効いていない規律を削除 (= ふりかえり.md / 実運用で 1 度も発火していない規律があれば候補)
+5. 整理した結果を TODO 47 (action リズム化) と TODO 48 (hook 自動チェック) の入力にする
 
 ---
 
