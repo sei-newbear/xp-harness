@@ -54,6 +54,8 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 42 | pre-implementation-reviewer を要件定義のみ段階でも呼べるよう description / 本文を明示改修 | `pre-impl-reviewer` | `interface純化`, `責務境界` | reviewer 実証で気づき (2026-05-15) |
 | 43 | xp-harness 既存 skill の description を公式推奨 (200-300 字 / What+When / third person) に短縮 | (全 skill) | `interface純化` | 公式 best-practice 調査で気づき (2026-05-16) |
 | 44 | skill 編集レビュー subagent (skill-reviewer 仮称) の新設 (機械的処理対策の本格版、効果が薄い時の参照点) | (新規 subagent) | `新規作成`, `責務境界` | 機械的処理失敗の振り返りで気づき (2026-05-17) |
+| 45 | ふりかえり skill 発火検知の既存 skill フック (運用結果次第で着手、main session の文脈判断で検知できないと判明したら) | `define-requirements`, `slice-tdd`, 他 | `機能拡張`, `責務境界` | ふりかえり skill basic-design で派生 (2026-05-17) |
+| 46 | main instruction のフェーズフローに「ふりかえり」を追加 (運用結果次第で着手) | `main-instructions` | `機能拡張`, `構造改修` | ふりかえり skill basic-design で派生 (2026-05-17) |
 
 ### タグの読み方
 
@@ -923,6 +925,47 @@ ROADMAP TODO 25 (ふりかえり skill) の basic-design 議論で、main sessio
    - 呼び出しタイミング: skill 新規作成 / 改修の直後、main session が自動で呼ぶ (定義は呼ぶ側の skill に書く、TODO 37 と同じ構造)
 3. 既存 reviewer subagent (`pre-implementation-reviewer` / `code-reviewer` / `e2e-reviewer`) との責務切り分けを明確化
 4. xp-harness の他改修 (TODO 36 / 42 / 43 等) と並走するときの影響範囲を確認
+
+---
+
+## TODO 45: ふりかえり skill 発火検知の既存 skill フック
+
+### 状況
+
+ROADMAP TODO 25 (ふりかえり skill) の basic-design で、ふりかえり skill の発火検知は **「main session が context (会話履歴 / docs/working/<title>/要件定義.md 等) から『セッション内のすべてのストーリーが完了した』と判断する」段階的観測モデル** を採用した。既存 skill (`define-requirements` / `slice-tdd` / 他) には今回フックを入れない (= 要件のスコープ外 #6 と整合)。
+
+ただし、実運用で main session の文脈判断が安定せず「拾い損ね / 早すぎる発火」が発生する場合、既存 skill にフックを入れる選択肢が残る。本 TODO はその参照点。
+
+### 再開時の起点
+
+1. ふりかえり skill 運用結果を観察、main session の文脈判断で十分か / 不十分かを評価
+2. 不十分と判明したら、フック方式を検討:
+   - `define-requirements` でストーリー一覧を明示的な data として書き出す
+   - `slice-tdd` のサイクル完了時にストーリー Done をマークする
+   - その他観測手段
+3. 既存 skill の責務範囲を超えないか確認 (= フックが skill の責務を膨らませないか)
+
+---
+
+## TODO 46: main instruction のフェーズフローに「ふりかえり」を追加
+
+### 状況
+
+`.apm/instructions/main.instructions.md` のフェーズフロー section は現在 **要件定義 → 基本設計 → 実装** で、ふりかえりが含まれない。
+
+ROADMAP TODO 25 (ふりかえり skill 新設) で skill 自体は追加するが、main instruction の「フェーズフロー」section は今回触らない (= 要件のスコープ外 #6 と整合)。
+
+ただし、ふりかえり skill の description だけでは main session の発火が不安定で、フェーズフロー section に明示する方が発火しやすい場合は、本 TODO で追加する。
+
+### 注意: TODO 22 / 23 / 24 との関係
+
+TODO 22 (フェーズフロー section の削除 or スリム化) / TODO 23 (各フェーズ振る舞いの skill 重複解消) / TODO 24 (main.instructions.md 全体の skill 重複洗い出し) と **方向性が衝突する可能性**。スリム化 (= section を削る) と「ふりかえりを追加」(= section に項目を増やす) は対立する。本 TODO に着手する前に、TODO 22 / 23 / 24 の方針が固まっているか確認、調整が必要。
+
+### 再開時の起点
+
+1. ふりかえり skill 運用結果を観察、main の発火が安定しているか評価
+2. 不安定と判明したら、main instruction の方針整理 (TODO 22 / 23 / 24) と並走させながら、フェーズフロー section に「ふりかえり」を追加する判断
+3. 追加する場合の書き方: 既存「要件定義 → 基本設計 → 実装」に「→ ふりかえり」を 1 行追加、または別 section として独立
 
 ---
 
