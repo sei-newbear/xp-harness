@@ -53,6 +53,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 41 | e2e SKILL.md 本文の「日本語名」表記を「natural language」に揃える | `e2e-skill` | `interface純化` | レビューでの気づき (description は更新済、本文未更新) |
 | 42 | pre-implementation-reviewer を要件定義のみ段階でも呼べるよう description / 本文を明示改修 | `pre-impl-reviewer` | `interface純化`, `責務境界` | reviewer 実証で気づき (2026-05-15) |
 | 43 | xp-harness 既存 skill の description を公式推奨 (200-300 字 / What+When / third person) に短縮 | (全 skill) | `interface純化` | 公式 best-practice 調査で気づき (2026-05-16) |
+| 44 | skill 編集レビュー subagent (skill-reviewer 仮称) の新設 (機械的処理対策の本格版、効果が薄い時の参照点) | (新規 subagent) | `新規作成`, `責務境界` | 機械的処理失敗の振り返りで気づき (2026-05-17) |
 
 ### タグの読み方
 
@@ -898,6 +899,30 @@ ROADMAP TODO 25 (ふりかえり skill) の basic-design 議論で claude-code-g
 3. 1 skill ずつ description を書き直す: What + When の 2 層構成 / Key use case を最初 / 具体名除去 / third person
 4. 短くした description で発火サインが落ちないか実セッションで観察
 5. 必要に応じて `when_to_use` frontmatter field (Claude Code 固有) を併用
+
+---
+
+## TODO 44: skill 編集レビュー subagent (skill-reviewer 仮称) の新設
+
+### 状況
+
+ROADMAP TODO 25 (ふりかえり skill) の basic-design 議論で、main session の Claude が要件 → description の変換を機械的にやり、How が description に紛れ込む失敗を起こした。CLAUDE.md に原則 3 (description は発火条件、本文は振る舞い) を書いた直後の出来事。
+
+根本原因の振り返りで、メタ認知 (= 「これは推論を要するタスクだ」と気づく起動トリガー) が弱く、specific なルールを書くだけでは「ルーチン処理に流れる癖」を抑えられないと判明した。
+
+当面は CLAUDE.md の「出力前に立ち止まる」section (meta-level の trigger) で対策。これで効くか、まずは観察する。
+
+それでも同じ失敗が再発するようなら、本格対策として skill 編集の都度に外部レビューを入れる仕組み (= 自己 check 不足を外部チェックで構造的に補う) が要る。本 TODO はその参照点。
+
+### 再開時の起点
+
+1. 「出力前に立ち止まる」section だけで効いているかを観察する期間を持つ (= 同じ失敗が再発するか)
+2. 再発するなら本 TODO に着手:
+   - 新規 subagent (`skill-reviewer` 仮称) を `.apm/agents/` に作成
+   - 責務: skill SKILL.md (description / 本文) を読んで、CLAUDE.md の「skill 設計の境界原則」「Description の書き方」「出力前に立ち止まる」の各 section と照合してレビュー
+   - 呼び出しタイミング: skill 新規作成 / 改修の直後、main session が自動で呼ぶ (定義は呼ぶ側の skill に書く、TODO 37 と同じ構造)
+3. 既存 reviewer subagent (`pre-implementation-reviewer` / `code-reviewer` / `e2e-reviewer`) との責務切り分けを明確化
+4. xp-harness の他改修 (TODO 36 / 42 / 43 等) と並走するときの影響範囲を確認
 
 ---
 
