@@ -4,6 +4,50 @@
 
 ---
 
+## skill のメンタルモデル
+
+### skill の構造
+
+skill は 2 層構造:
+
+- **frontmatter (interface 層)**: `name` / `description` / その他 metadata。常時 context に乗り、main session が「この skill を呼ぶか」を判断するための signal。抽象表現で書く
+- **本文 (実装層)**: SKILL.md の Markdown 部分。skill 発火時に load され、main session が呼ばれた後どう振る舞うかをガイドする。具体表現で書く
+
+skill 全体は **「interface + 実装」のセット**。「skill = description」「skill = 本文」のいずれかと同視するのは取り違え。
+
+### skill の動作フロー
+
+時系列で何が起きるか:
+
+1. **起動時**: Claude Code 起動時に、全 skill の frontmatter が main session の context に metadata として load される。skill 本文はまだ load されない
+2. **判断時**: main session が会話文脈から「ある skill の description にマッチする状況」と認識したら、その skill を呼ぶか判断する
+3. **(任意) 提案時**: 場合により main が依頼者に「やりますか?」と提案する (= 自発的に促す skill のパターン)。この時点で skill 本文はまだ load されていない
+4. **発火時**: main session が skill 本文を load する (依頼者の承認 or 自動)
+5. **振る舞い時**: main session が本文の指示に従って動く
+6. **完了時**: skill タスクが終わり、main session が次のタスクに移る
+
+**「呼ばれる前」と「呼ばれた後」** を区別する: 起動 / 判断 / 提案 は呼ばれる前 (= description が効く)、発火 / 振る舞い / 完了 は呼ばれた後 (= 本文が効く)。
+
+### 「これはどこに書く?」の判断軸
+
+skill / description / 本文 / 要件定義.md / 他 skill / CLAUDE.md のどこに書くべきか迷ったら、以下 4 軸で位置づける:
+
+1. **いつ読まれるか**
+   - 常時 context に乗る: CLAUDE.md / 全 skill の description / main instruction
+   - 発火時 load: skill 本文 / reviewer agent の本文
+   - 特定タスクで参照: `docs/working/<title>/要件定義.md`, `基本設計.md`
+2. **誰が読むか**
+   - main session (Claude) / reviewer agent / 改修者 / consumer
+3. **既出か**
+   - 他文書で既に書いてあるなら、重複させない (= 二重課金 / drift リスク回避)
+4. **抽象化レベル**
+   - 抽象 (= 何をするか / 発火条件 / interface): description / 要件
+   - 具象 (= どう振る舞うか / 実装): 本文 / 基本設計
+
+4 軸で位置づけてから書く。一つでも答えに詰まったら、書く場所を再考する。
+
+---
+
 ## skill 設計の境界原則 (暫定、固まったら philosophy / skill-design-rules 等に昇格予定)
 
 xp-harness の skill (`.apm/skills/<name>/SKILL.md`) を作る・改修するときの 3 つの境界原則。
