@@ -60,6 +60,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 48 | skill 編集時の hook ベース自動チェック (skill 編集で description / 本文の規律違反を自動で止める) | `harness-repo` (skill 編集ワークフロー) | `機能拡張` | ふりかえりで気づき (2026-05-17)、47/48/49 セット対応で **Tier 1** |
 | 49 | CLAUDE.md の規律 section の整理 (似た規律の統合 / 規律間の関係を 1 枚のマップで明示 / 効いていない規律の削除) | `harness-repo` (CLAUDE.md) | `重複削減`, `構造改修` | ふりかえりで気づき (2026-05-17)、47/48/49 セット対応で **Tier 1** |
 | 50 | 公開 OSS リポジトリへの内部固有名詞 leak 防止機構 (commit / push 前 check の責務をどこに置くか + 仕組み) | `done-verifier`, `harness-repo` | `機能拡張`, `責務境界`, `リリース運用` | ふりかえり skill 由来の内部フィードバックを公開反映する際に必要、**Tier 1** |
+| 51 | define-requirements skill に Constraints (制約) を input/output 両面で追加 (引き出し手順 + md セクション) | `define-requirements` | `機能拡張`, `構造改修` | レビューでの気づき (2026-05-20)、**Tier 1** |
 
 ### タグの読み方
 
@@ -78,7 +79,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
   - `方法論導入`: eval / TDD / debug 等の方法論導入
 - **温度感**: 着手判断軸 (現時点での主観的優先順位)。タグとは別軸。
 
-### 現在の Tier 1 (着手対象、8 件)
+### 現在の Tier 1 (着手対象、9 件)
 
 選定軸: **「改善サイクルを回せるもの」** + **設計負債で依頼者が明示的に高優先指定したもの** + **ふりかえり由来の改善 (利用者影響なし)** + **公開 OSS リポジトリ運用上の機密性配慮**。
 Tier 2 / Tier 3 は未確定 (痛みが顕在化してから棚卸し)。
@@ -93,6 +94,7 @@ Tier 2 / Tier 3 は未確定 (痛みが顕在化してから棚卸し)。
 | 48 | skill 編集 hook 自動チェック | ふりかえり由来 (47/48/49 セット対応) |
 | 49 | CLAUDE.md 規律 section 整理 | ふりかえり由来 (47/48/49 セット対応) |
 | 50 | 公開 OSS リポジトリへの内部固有名詞 leak 防止機構 | 公開 OSS 運用 (ふりかえり由来の内部フィードバックを公開反映する際に必要) |
+| 51 | define-requirements skill に Constraints (制約) input/output 両面追加 | 設計負債 (要件定義 skill の Constraints gap、依頼者 Tier 1 指定) |
 
 **47/48/49 はセットで対応**: ふりかえり.md (`docs/working/retrospective-skill/ふりかえり.md`) の root cause 分析「規律を判断軸として持っているだけで具体 action / 強制チェックポイントが無い + 規律間の関係性が整理されていない」への複合対応。利用者影響なしの harness 内部改善。
 
@@ -1051,6 +1053,51 @@ xp-harness には ふりかえり skill (`.apm/skills/retrospective/`) があり
 3. 検知対象の表現方法を決める (= 既知固有名詞リストを改修者の手元 (= リポジトリ外) で管理 + 汎用ツール (`gitleaks` 等) 再利用も検討)
 4. 案 A の場合: done-verifier の責務マップが肥大化しすぎないか責務境界を確認 (= TODO 6 「done-verifier interface 純化」 と接続)
 5. 関連 TODO: TODO 48 (skill 編集 hook 自動チェック) と機構が近いので共通化可能か検討
+
+---
+
+## TODO 51: define-requirements skill に Constraints (制約) を input/output 両面で追加
+
+### 状況
+
+define-requirements skill は現状、Goal (= ユーザーストーリー + Why) と Acceptance (= Done) を明示的に引き出すが、Constraints (= 守るべき条件全般) を input/output 双方で扱えていない。
+
+Constraints は技術的なものに限らず、以下を含む広い概念として扱う:
+- **技術的**: 採用フレームワーク・ランタイムの制限 (例: Cloudflare Workers のサイズ上限、Vercel Functions の実行時間)、既存仕様との互換、依存ライブラリ
+- **非機能**: 性能 (response time / throughput)、可用性、運用負荷
+- **セキュリティ・コンプライアンス**: 認証認可、個人情報、業界規制 (GDPR / 個人情報保護法等)
+- **コスト**: API 呼び出し料金、infra 料金、人件費の上限
+- **期限・納期**: ローンチ日、業務上の deadline (月末締め等)
+- **組織・社内ルール**: コーディング規約、承認フロー、利用可能なツール / SaaS の制限
+- **リソース**: 人員、開発期間、利用可能な権限
+
+現状のギャップ:
+- **Input 側**: skill 本文「やること」(1〜5) に Constraints を引き出す項目がない。「依頼者が**技術的**制約を持ち出してきた場合は要件定義に影響するので議論する」(`.apm/skills/define-requirements/SKILL.md:149`) と受け身に一文あるだけで、しかも対象が技術的制約に narrow されている
+- **Output 側**: 要件定義.md テンプレート (4 セクション: 背景と動機 / ユーザーストーリー / Done / スコープ外) に Constraints セクションがない
+
+スコープ外と Constraints は性格が違う:
+- **スコープ外**: 「今回はやらない、後でやるかも」(交渉可能な除外)
+- **Constraints**: 「絶対に踏み外せないルール」(非交渉)
+
+結果、依頼者が制約を持ち出しても md に書き起こされず、基本設計フェーズで再発見するか実装中に気付く構造になっている。
+
+### 背景
+
+Anthropic 公式が Opus 4.7 (賢くなった上位モデル) 向けに「**Goal / Constraints / Acceptance criteria** の 3 要素を最初に与えれば、その後は LLM が自律的に調査・対話で残りを埋める」というプロンプト書式を提示している。この 3 要素を要件定義 skill に反映させたい、というのが Tier 1 指定の根拠 (依頼者の意向、2026-05-20 レビュー)。
+
+3 要素を要件定義 skill に当てると、Goal (= ユーザーストーリー + Why) と Acceptance (= Done) は既存の skill 構造でカバーされているが、**Constraints の取り扱いが input/output 両方で抜けている**ことが判明した。
+
+「LLM への初期入力 (= 依頼者からの最初の合意点)」と「調べた結果の共有 md (= 要件定義.md)」は別物で、Constraints は両側に必要、という整理。
+
+### 再開時の起点
+
+1. Constraints を input 側 (skill 本文「やること」) で引き出す手順を追加
+2. Output 側 (要件定義.md テンプレート) に Constraints セクションを追加
+3. Constraints の例 (技術 / 非機能 / セキュリティ・コンプライアンス / コスト / 期限・納期 / 組織・社内ルール / リソース) を skill 本文に列挙し、**技術的制約に閉じないことを明示**
+4. 既存の `SKILL.md:149` の「技術的制約」表現を Constraints 全般に書き換え (技術以外も漏らさない)
+5. スコープ外と Constraints の区別を skill 本文で明示
+6. 常設セクションにするか optional にするか方針を決める (該当なしのときの書き方も含む)
+7. basic-design skill 側との cascade 整理 (関連: TODO 28 「define-requirements / basic-design と dialogue-principles の重複整理」)
 
 ---
 
