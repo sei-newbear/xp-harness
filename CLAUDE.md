@@ -1,124 +1,90 @@
 # xp-harness — このリポジトリで作業するときの working rules
 
-このファイルは **xp-harness 本体を改修するとき** に守るべき暫定ルール。consumer に配布される skill / instruction ではない。ここに書く内容は「まだ固まっていないが、当面は守りたい」レベルのものを置く。固まったら philosophy skill / 新規 skill 等に昇格する。
+このファイルは **xp-harness 本体を改修するとき** に守るべき改修者向け instruction。consumer に配布される skill / instruction ではない (= project root の `CLAUDE.md` は consumer 配布対象外)。
 
 ---
 
-## skill のメンタルモデル
+## 依頼者の真のゴール (= 改修者の方向性)
 
-### skill の構造
+改修者が「やりたいこと」を伝えたら、main session (= コーディング Agent、現時点では Claude Code 等) が xp-harness の harness 機構 (= skill / CLAUDE.md / subagent) に適切に落とし込めるよう、**ある程度自走して任せられる状態** を実現する。
 
-skill は 2 層構造:
-
-- **frontmatter (interface 層)**: `name` / `description` / その他 metadata。常時 context に乗り、main session が「この skill を呼ぶか」を判断するための signal。抽象表現で書く
-- **本文 (実装層)**: SKILL.md の Markdown 部分。skill 発火時に load され、main session が呼ばれた後どう振る舞うかをガイドする。具体表現で書く
-
-skill 全体は **「interface + 実装」のセット**。「skill = description」「skill = 本文」のいずれかと同視するのは取り違え。
-
-### skill の動作フロー
-
-時系列で何が起きるか:
-
-1. **起動時**: Claude Code 起動時に、全 skill の frontmatter が main session の context に metadata として load される。skill 本文はまだ load されない
-2. **判断時**: main session が会話文脈から「ある skill の description にマッチする状況」と認識したら、その skill を呼ぶか判断する
-3. **(任意) 提案時**: 場合により main が依頼者に「やりますか?」と提案する (= 自発的に促す skill のパターン)。この時点で skill 本文はまだ load されていない
-4. **発火時**: main session が skill 本文を load する (依頼者の承認 or 自動)
-5. **振る舞い時**: main session が本文の指示に従って動く
-6. **完了時**: skill タスクが終わり、main session が次のタスクに移る
-
-**「呼ばれる前」と「呼ばれた後」** を区別する: 起動 / 判断 / 提案 は呼ばれる前 (= description が効く)、発火 / 振る舞い / 完了 は呼ばれた後 (= 本文が効く)。
-
-### 「これはどこに書く?」の判断軸
-
-skill / description / 本文 / 要件定義.md / 他 skill / CLAUDE.md のどこに書くべきか迷ったら、以下 4 軸で位置づける:
-
-1. **いつ読まれるか**
-   - 常時 context に乗る: CLAUDE.md / 全 skill の description / main instruction
-   - 発火時 load: skill 本文 / reviewer agent の本文
-   - 特定タスクで参照: `docs/working/<title>/要件定義.md`, `基本設計.md`
-2. **誰が読むか**
-   - main session (Claude) / reviewer agent / 改修者 / consumer
-3. **既出か**
-   - 他文書で既に書いてあるなら、重複させない (= 二重課金 / drift リスク回避)
-4. **抽象化レベル**
-   - 抽象 (= 何をするか / 発火条件 / interface): description / 要件
-   - 具象 (= どう振る舞うか / 実装): 本文 / 基本設計
-
-4 軸で位置づけてから書く。一つでも答えに詰まったら、書く場所を再考する。
+改修者が都度説明しないと整理できない状態が続くと、`.apm/` 配下 (= 利用者向け本題) の改修が全く進まない。本リポジトリの改修者向け装置 (= 本 `CLAUDE.md` / `.claude/skills/philosophy/` / `.claude/skills/skill-design-style/` / `.claude/agents/skill-reviewer.md`) はすべて、その自走を支えるためのもの。
 
 ---
 
-## skill 設計の境界原則 (暫定、固まったら philosophy / skill-design-rules 等に昇格予定)
+## xp-harness の中核思想
 
-xp-harness の skill (`.apm/skills/<name>/SKILL.md`) を作る・改修するときの 3 つの境界原則。
+- **規律装置最小注入**: 規律は最小限の文書で注入する。重複させない、肥大化させない
+- **ペアプロ哲学**: 機械的なチェックよりも subagent / 改修者によるペアプロでの捕捉が筋
+- **decentralized**: 規律 / 責務は分散して持つ、1 箇所に集約しすぎない
+- **harness 機構の E2E テスト枠組みは未確立** → harness 改修の Done は事前縛り最小化、事後評価許容
+- **投資フェーズの仕組み作り** では運用コスト最適化より価値命題の充実を優先
 
-### 原則 1: skill の frontmatter `description` は interface — 具体の話を入れない
-
-- description は呼び出し側 (main session) に対する interface。発火条件と責務を抽象レベルで宣言する場所。
-- **NG 例**: 具体 framework 名 (`Playwright`, `Cypress`)、具体 API 名 (`getByRole`, `test.use`, `page.locator`)、具体ツール名 (`gh`, `gh cli` 等)。
-- **OK 例**: 一般概念 (E2E テスト、commit、branch、push、pull、rebase、conflict 等 — エコシステム共通の語彙)。
-- 判断軸: 「consumer の環境 / 採用 framework が変わっても description の表現が成立するか」。成立しないなら具体に踏み込みすぎ。
-
-### 原則 2: skill 本文は展開後 (consumer の `.claude/skills/` 等に deploy された状態) でも自然に読めること
-
-- skill が APM 経由で consumer に配布されると、`.apm/` / `apm compile` / consumer といった APM 機構の語彙はもはや関係なくなる。
-- **NG 例**: `.apm/instructions/<x>.md`, `apm compile`, "consumer の自前 instruction", "last-installed-wins 機構" のような APM 機構固有の言及を skill 本文に直書きすること。
-- **正しい場所**: APM 機構の話は README / apm.yml / APM 側 instruction (`.apm/instructions/`) に書く。skill 本文は APM 非依存の汎用表現で書く。
-- override の話を skill 本文に残したいなら「project 固有のルールで override 可能 (override 方法はインストール先 agent の仕様に従う)」程度の抽象表現にとどめる。
-
-### 原則 3: description は発火条件、本文は発火後の振る舞いを書く
-
-- skill の **発火** は Claude Code の skill 機構によって決まる: frontmatter `description` (および skill 名) を main session が読み、文脈にマッチしたら skill 本文が読み込まれる。発火を決めるのは description であって、本文ではない。
-- 本文は発火後の振る舞いガイド: skill が呼ばれた後の対話進行・規律・成果物の書式などを書く場所。
-- **NG 例**: 「main session がいつ skill を呼ぶか」「どの観測サインで呼ぶか」のような発火条件を本文側に書く。逆に「発火後の対話手順」「成果物の書式」を description 側に書く。
-- 判断軸: 「これは skill が呼ばれる前に効く話か (= description)、呼ばれた後に効く話か (= 本文)」を区別する。混ぜると、skill が発火しない (= 発火条件が本文にあると Claude Code は読まない) / 振る舞いが安定しない (= 振る舞いが description にあると skill 利用側に伝わらない)。
-
-### 適用タイミング
-
-skill の新規作成 / 改修時は、description と本文の両方を上記 3 原則でチェックする。違反を見つけたら指摘 or 修正候補として提示する。skill-creator 系の作業に入る前に必ず思い出すこと。
+詳細な規律 / 判断軸 / 改修フローは `.claude/skills/skill-design-style/SKILL.md` に集約されている (= 下記の埋め込み参照を参照)。
 
 ---
 
-## Description の書き方 (公式推奨)
+## スコープ境界の判別 (= 利用者向け vs 改修者向け)
 
-skill の frontmatter `description` は「9 割の skill 発火失敗は description の品質に起因」(Claude Code 公式) と言われる重要 field。以下を守る:
+xp-harness は OSS として skill / agent / instruction を配布する harness。改修対象が「利用者向け」か「改修者向け」かを必ず判別する。
 
-- **third person のみ** (「I can」「You can」禁止)
-- **What (何をするか) + When (いつ使うか) の 2 層構成**
-- **Key use case (What) を最初に置く** — skill 数が増えると character budget で末尾が切られるため
-- **最大 1,024 字、実質 200-300 字推奨** (短いほど発火精度高い)
-- **具体ツール / API 名を避ける** (原則 1 と整合): framework-agnostic な表現で書く
-- description が短く済まない場合、`when_to_use` frontmatter field を使う選択肢もある (Claude Code 固有)
+| カテゴリ | パス | 配布 |
+|---|---|---|
+| **利用者向け** | `.apm/skills/*` / `.apm/agents/*` / `.apm/instructions/*` および `.claude/` 配下の対応 symlink (= `.apm/` と同じ実体) | APM 経由で配布 |
+| **改修者向け** | `CLAUDE.md` (project root) / `.claude/skills/philosophy/` / `.claude/skills/release/` / `.claude/skills/skill-design-style/` / `.claude/agents/skill-reviewer.md` (= それぞれ git tracked、symlink でない) | 非配布 |
 
-Good:
+判別法: `ls -la` で symlink でないことを確認。symlink なら `.apm/` 配下と同じものなので利用者向け、symlink でなく直接コミットされていれば改修者向け。
 
-    description: Analyze Excel spreadsheets, create pivot tables, generate charts. Use when analyzing Excel files, spreadsheets, tabular data.
-
-Bad:
-
-    description: Use openpyxl to process spreadsheets
-
-参考: https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices
+新規 skill / agent を改修者向けで作るときは、必ず `.claude/` 配下に直接コミット (= `.apm/` には置かない)。philosophy skill / skill-design-style / skill-reviewer と同じパターン。
 
 ---
 
-## 出力前に立ち止まる (機械的処理に流されない)
+## 機械的処理に流れる失敗の認識 (= 方向性)
 
-skill / description / 本文 / 要件 → description の変換などを書くとき、出力前に必ず立ち止まる:
+main session (= 改修者の役) が **機械的処理に流れる失敗** は、改修品質を直接損なう。「これはルーチン作業」「決まったパターンの繰り返し」と分類した瞬間に **立ち止まる**。
 
-- 要件 → description の変換は **抽象化作業**。機械的コピーしない (要件は具体を含むのが正しい、description は抽象が正しい、性質が違う)
-- 各文を「これは abstract か / 具体な How か」「description に書くか / 本文に書くか」と都度問う
-- 既存例 (xp-harness 既存 skill 等) の見た目に引っ張られない。ルールが先、例は参考
-- 「ルーチン作業」と分類しそうな瞬間こそ要注意 (= そこで推論を起動する)
-
-意図: 規律装置の最小注入。「考えるべき」と気づくトリガーを常駐させて、機械的処理に流れる癖を抑える。
+具体的な自己観察項目 (= 自分の発想軸 / 確認 skip / 省略 / 英語混じり / 即同意 / 機械的処理 の 6 項目) は `skill-design-style` skill 本文に集約されている。対話の場面では `dialogue-principles` skill にも同じ規律が書かれている (= 対話時の core)。skill / agent 改修と対話は同時に起きるので、両方の skill を併用する。
 
 ---
 
-## Main instruction の取り込み (self-host / dogfooding)
+## skill 設計の流儀 (= `skill-design-style` skill に集約)
 
-xp-harness 本体の main instruction (consumer に配信される運用ルール) を改修者環境でも有効にするため、起動時に取り込む。改修者は `.apm/instructions/main.instructions.md` を直接編集すれば、Claude Code を再起動するだけで反映される (build step なし)。
+skill / agent (`.apm/skills/<name>/SKILL.md` / `.apm/agents/<name>.md` / `.claude/skills/<name>/SKILL.md` / `.claude/agents/<name>.md`) を新規作成・改修するときの規律 / 判断軸 / 改修フローは、`.claude/skills/skill-design-style/SKILL.md` に集約されている。改修時は必ずこの skill を発火させる (= description の発火条件で自動発火する設計)。
 
-`.apm/skills/` の各 skill と `.apm/agents/` の各 subagent は `scripts/setup-dev.sh` が `.claude/skills/<x>` / `.claude/agents/<x>.md` への symlink を作って認識させる (philosophy skill は元から `.claude/skills/philosophy/` で git tracked、対象外)。
+含む内容:
+
+- skill / agent の構造 (= 2 層構造、動作フロー)
+- 境界原則 3 つ (= description は interface / 本文は consumer 展開後も自然 / 発火条件と振る舞いを混ぜない)
+- description の書き方 (= 公式推奨、third person / What+When / Key use case 最初 / 文字数推奨)
+- 出力前に立ち止まる (= 機械的処理に流れる失敗の認識)
+- skill 改修フロー (= 4 軸判断 → 構造踏まえる → 境界原則 → description → 立ち止まる → skill-reviewer に通す → 対話なら dialogue-principles)
+- 既存 reviewer subagent との責務切り分け
+
+@.claude/skills/skill-design-style/SKILL.md
+
+---
+
+## skill-reviewer (= 改修フローのペアプロ相手)
+
+skill / agent の改修後は、必ず `skill-reviewer` subagent をペアプロ相手として呼ぶ。3 用途で使う:
+
+- **改修後の最終レビュー** (= 必須)
+- **設計中の壁打ち / 議論** (= 任意・対話的、何度でもやり取り)
+- **判断に迷ったときの第三者視点** (= 任意、依頼者に確認する前のステップとして気軽に呼ぶ)
+
+skill-reviewer は skill-design-style と dialogue-principles を preload skill として読み込み、その規律 / 判断軸に照らしてレビューする。出力は severity スコアなしの日本語の文章で、対応必要性を文脈で伝える。
+
+---
+
+## Main instruction の取り込み (= self-host / dogfooding)
+
+xp-harness 本体の main instruction (= consumer に配信される運用ルール) を改修者環境でも有効にするため、起動時に取り込む。改修者は `.apm/instructions/main.instructions.md` を直接編集すれば、Claude Code を再起動するだけで反映される (= build step なし)。
+
+`.apm/skills/` の各 skill と `.apm/agents/` の各 subagent は `scripts/setup-dev.sh` が `.claude/skills/<x>` / `.claude/agents/<x>.md` への symlink を作って認識させる。以下は **symlink でなく直接 git tracked** で対象外:
+
+- `.claude/skills/philosophy/` (= 中核思想 skill、改修者向け)
+- `.claude/skills/release/` (= リリース手順 skill、改修者向け)
+- `.claude/skills/skill-design-style/` (= skill 設計の流儀、改修者向け)
+- `.claude/agents/skill-reviewer.md` (= skill レビュー subagent、改修者向け)
 
 @.apm/instructions/main.instructions.md
