@@ -76,6 +76,17 @@ skill-reviewer は skill-design-style と dialogue-principles を preload skill 
 
 ---
 
+## git-workflow の改修者向け上書き
+
+xp-harness の改修者環境では、`git-workflow` skill (= 配布側 skill) の以下のデフォルトを **上書き** する (= project の CLAUDE.md が skill のデフォルトより優先、`git-workflow` skill 本文の「Project 固有ルールでの上書き」section と整合):
+
+- **PR 作成は改修者 Agent の自走範囲に含む** (= デフォルトの「守備範囲は `git push` まで、PR 作成・merge は依頼者の責務」を上書き)。改修者の真のゴール (= 自走) のために、PR 作成まで Agent が動く。ただし、依頼者が明示的に「PR は私が作る」と言った場合はそれに従う
+- **`gh` コマンドの使用を許容する** (= デフォルトの「`gh` 不使用」を上書き)。改修者環境では `gh` が入っており、PR 作成・確認に必要
+
+この上書きは改修者向けのみ (= 本 `CLAUDE.md` は consumer 配布対象外)。配布側 skill (`.apm/skills/git-workflow/SKILL.md`) のデフォルトは変えず、consumer 環境では従来通り「PR 作成は依頼者の責務」「`gh` 不使用」が効く。
+
+---
+
 ## Main instruction の取り込み (= self-host / dogfooding)
 
 xp-harness 本体の main instruction (= consumer に配信される運用ルール) を改修者環境でも有効にするため、起動時に取り込む。改修者は `.apm/instructions/main.instructions.md` を直接編集すれば、Claude Code を再起動するだけで反映される (= build step なし)。
