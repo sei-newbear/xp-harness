@@ -4,11 +4,17 @@ apm_modules/
 apm.lock.yaml
 
 # self-host symlinks (scripts/setup-dev.sh で生成、改修者個人の dev 環境)
-# philosophy / release は本物ファイルで git tracked なので除外
+# 以下は本物ファイルで git tracked なので除外
+# - philosophy: 中核思想 skill (改修者向け)
+# - release: リリース手順 skill (改修者向け)
+# - skill-design-style: skill 設計の流儀 skill (改修者向け)
+# - skill-reviewer: skill レビュー subagent (改修者向け)
 .claude/skills/*
 !.claude/skills/philosophy/
 !.claude/skills/release/
-.claude/agents/
+!.claude/skills/skill-design-style/
+.claude/agents/*
+!.claude/agents/skill-reviewer.md
 
 # Local config / env / secrets
 .env
