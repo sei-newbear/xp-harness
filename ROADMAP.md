@@ -62,6 +62,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 50 | 公開 OSS リポジトリへの内部固有名詞 leak 防止機構 (commit / push 前 check の責務をどこに置くか + 仕組み) | `done-verifier`, `harness-repo` | `機能拡張`, `責務境界`, `リリース運用` | ふりかえり skill 由来の内部フィードバックを公開反映する際に必要、**Tier 1** |
 | 51 | define-requirements skill に Constraints (制約) を input/output 両面で追加 (引き出し手順 + md セクション) | `define-requirements` | `機能拡張`, `構造改修` | レビューでの気づき (2026-05-20)、**Tier 1** |
 | 52 | リリース時に `latest` タグを更新する仕組み | `harness-repo` | `リリース運用` | レビューでの気づき (2026-05-23)、**Tier 1** |
+| 53 | 実装 skill / E2E実行 skill を MVP で新設 + slice-tdd から参照案内追加 | `slice-tdd`, (新規 skill 2 個) | `新規作成`, `機能拡張` | レビューでの気づき (2026-05-23)、**Tier 1** (MVP リリース優先) |
 
 ### タグの読み方
 
@@ -80,7 +81,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
   - `方法論導入`: eval / TDD / debug 等の方法論導入
 - **温度感**: 着手判断軸 (現時点での主観的優先順位)。タグとは別軸。
 
-### 現在の Tier 1 (着手対象、11 件)
+### 現在の Tier 1 (着手対象、12 件)
 
 選定軸: **「改善サイクルを回せるもの」** + **設計負債で依頼者が明示的に高優先指定したもの** + **ふりかえり由来の改善 (利用者影響なし)** + **公開 OSS リポジトリ運用上の機密性配慮**。
 Tier 2 / Tier 3 は未確定 (痛みが顕在化してから棚卸し)。
@@ -98,6 +99,7 @@ Tier 2 / Tier 3 は未確定 (痛みが顕在化してから棚卸し)。
 | 50 | 公開 OSS リポジトリへの内部固有名詞 leak 防止機構 | 公開 OSS 運用 (ふりかえり由来の内部フィードバックを公開反映する際に必要) |
 | 51 | define-requirements skill に Constraints (制約) input/output 両面追加 | 設計負債 (要件定義 skill の Constraints gap、依頼者 Tier 1 指定) |
 | 52 | リリース時に `latest` タグを更新する仕組み | リリース運用 (依頼者 Tier 1 指定) |
+| 53 | 実装 skill / E2E実行 skill を MVP で新設 | 配布構造 (依頼者 Tier 1 指定、MVP リリース優先) |
 
 **47/48/49 はセットで対応**: ふりかえり.md (`docs/working/retrospective-skill/ふりかえり.md`) の root cause 分析「規律を判断軸として持っているだけで具体 action / 強制チェックポイントが無い + 規律間の関係性が整理されていない」への複合対応。利用者影響なしの harness 内部改善。
 
@@ -1132,6 +1134,43 @@ Anthropic 公式が Opus 4.7 (賢くなった上位モデル) 向けに「**Goal
 3. consumer 側で `xp-harness@latest` が期待通り解決されるかを実環境で検証
 4. 解決されない場合の次手 (= GitHub Release の "Latest" マーカー / APM 側の version 解決ロジック改修 / その他) を propose-options で整理
 5. 関連 TODO: TODO 38 (release notes 自動化) と並走する場合は Action を共通化できないか検討
+
+---
+
+## TODO 53: 実装 skill / E2E実行 skill を MVP で新設 + slice-tdd から参照案内追加
+
+### 状況
+
+上位の目的は **「コード実装と E2E 実行に関する project 固有規約を、consumer が project 側で書き入れる空間を確保する」**。MVP リリース優先で、xp-harness としては薄いデフォルトを置き、consumer が `.apm/` で project 固有規約に上書きする想定 (= 既存 e2e skill と同じ「上書き前提」パターン)。
+
+#### 新設する 2 skill
+
+- **実装 skill (= 名前 TBD: implementation / coding / coding-rules 等)**
+  - デフォルト中身は薄め: 「他に類似する skill (= 業界既存の同種 skill / consumer の project 固有 skill) があれば参照する」案内
+  - 1 つだけ具体方針: **コメントは基本書かない (= コードを綺麗にして名前で意図を伝える)、コメントは Why のみ OK**
+  - consumer は project 固有のコード規約 / architecture を上書きで埋める想定
+- **E2E実行 skill (= 名前 TBD: e2e-execution / e2e-runner 等)**
+  - デフォルト中身は超薄め: 「他に類似する skill があれば参照する」案内のみ
+  - consumer は project 固有の E2E 実行手順 (= 環境セットアップ / 実行コマンド / CI 統合 / 失敗時手順等) を上書きで埋める想定
+  - 既存 `e2e` skill (= E2E spec 規約 / 仕様書性 / セレクタ / ヘルパー) とは別 skill、責務切り分け
+
+#### slice-tdd skill への参照案内追加
+
+slice-tdd skill 本文に「実装 skill / E2E実行 skill を参照する」指示を追加。
+
+#### 既存 TODO との関係
+
+- **「E2E と対になる実装 skill の新設 (規約 + architecture 込み)」(= 既存 TODO 27)**: 方向性は同じだが本格作り込み版。本 TODO 53 は MVP 版で、規約 / architecture の充実は TODO 27 で別途、または本 TODO 53 が育って吸収する可能性
+- **「slice-tdd skill に『実装関連 skill があれば参照する』指示を追加」(= 既存 TODO 35)**: 本 TODO 53 が新 skill を本実装するので、TODO 35 の暫定指示は不要になる可能性 (= 後で整理)
+
+### 再開時の起点
+
+1. skill 名を確定 (= propose-options で議論)
+2. 実装 skill の最低限 SKILL.md を作成 (= 他 skill 参照案内 + コメント方針、consumer 上書き前提を本文で明示)
+3. E2E実行 skill の最低限 SKILL.md を作成 (= 他 skill 参照案内のみ、既存 e2e skill との責務切り分けを description で明確化)
+4. slice-tdd skill 本文に「両 skill を参照する」指示を追加
+5. consumer 上書きパターンを README / instruction でも明示 (= 既存 e2e skill の上書きパターンと整合)
+6. 既存 TODO 27 / 35 の整理判断 (= 重複部分の統廃合、本 TODO 53 で吸収された部分の欠番化検討)
 
 ---
 
