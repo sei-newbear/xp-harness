@@ -114,7 +114,7 @@ skill / agent を作る・改修するときの 3 つの境界原則。
 - NG 例: 「main session がいつ skill を呼ぶか」「どの観測サインで呼ぶか」のような発火条件を本文側に書く。逆に「発火後の対話手順」「成果物の書式」を description 側に書く
 - 判断軸: 「これは skill が呼ばれる前に効く話か (= description)、呼ばれた後に効く話か (= 本文)」を区別する
 
-### 手順 4: description の書き方 (公式推奨)
+### 手順 4: description / name の書き方 (公式推奨)
 
 skill の frontmatter `description` は「9 割の skill 発火失敗は description の品質に起因」(Claude Code 公式) と言われる重要 field。以下を守る:
 
@@ -124,6 +124,11 @@ skill の frontmatter `description` は「9 割の skill 発火失敗は descrip
 - 最大 1,024 字、実質 200-300 字推奨 (= 短いほど発火精度高い)
 - 具体ツール / API 名を避ける (= 原則 1 と整合): framework 非依存な表現で書く
 - description が短く済まない場合、`when_to_use` frontmatter field を使う選択肢もある (Claude Code 固有)
+
+`name` フィールドの扱い (= 公式 docs に基づく):
+
+- **skill** (`.apm/skills/<dir>/SKILL.md` / `.claude/skills/<dir>/SKILL.md`): `name` は **省略する** (= ディレクトリ名がデフォルトで使われる、明示は重複管理になる)
+- **subagent** (`.apm/agents/<file>.md` / `.claude/agents/<file>.md`): `name` は **必須** (= 公式 docs で required、ファイル名と一致させる必要はないが明示する)
 
 Good 例:
 
