@@ -70,13 +70,9 @@ skill / agent (`.apm/skills/<name>/SKILL.md` / `.apm/agents/<name>.md` / `.claud
 
 ## skill-reviewer (= 改修フローのペアプロ相手)
 
-skill / agent の改修後は、必ず `skill-reviewer` subagent をペアプロ相手として呼ぶ。3 用途で使う:
+skill / agent の改修後は、必ず `skill-reviewer` subagent をペアプロ相手として呼ぶ。skill-reviewer は skill-design-style と dialogue-principles を preload skill として読み込み、その規律 / 判断軸に照らしてレビューする。出力は severity スコアなしの日本語の文章で、対応必要性を文脈で伝える。
 
-- **改修後の最終レビュー** (= 必須)
-- **設計中の壁打ち / 議論** (= 任意・対話的、何度でもやり取り)
-- **判断に迷ったときの第三者視点** (= 任意、依頼者に確認する前のステップとして気軽に呼ぶ)
-
-skill-reviewer は skill-design-style と dialogue-principles を preload skill として読み込み、その規律 / 判断軸に照らしてレビューする。出力は severity スコアなしの日本語の文章で、対応必要性を文脈で伝える。
+呼ぶタイミングと 3 用途 (= 改修後の最終レビュー / 設計中の壁打ち / 判断に迷ったときの第三者視点) の詳細は `.claude/skills/skill-design-style/SKILL.md` の「skill-reviewer の使い方」section を参照 (= main session は skill-design-style 発火中に本文 load 済)。
 
 ---
 

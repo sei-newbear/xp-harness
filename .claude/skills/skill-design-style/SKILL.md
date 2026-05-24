@@ -157,15 +157,19 @@ skill 改修中も対話と同じ規律が効くので、dialogue-principles を
 
 ### 手順 6: skill-reviewer に必ず通す (= 改修後の最終レビュー)
 
-skill / agent の改修が一段落したら、**必ず skill-reviewer を呼ぶ**。skill-reviewer は本 skill (skill-design-style) を preload skill として context に注入された状態で動き、改修内容を規律に照らしてレビューする。
+skill / agent の改修が一段落したら、**必ず skill-reviewer を呼ぶ** (= 改修フローの最後の step として規律化、呼び忘れない)。skill-reviewer は本 skill (skill-design-style) を preload skill として context に注入された状態で動き、改修内容を規律に照らしてレビューする。
 
-skill-reviewer の使い方 (= 3 用途):
+出力フォーマットは日本語の文章 (= severity スコアなし、対応必要性は文章の文脈で伝える)。
 
-- **改修後の最終レビュー** (= 必須): 改修が一段落したら呼ぶ。出力フォーマットは日本語の文章 (= severity スコアなし、対応必要性は文章の文脈で伝える)
-- **設計中の壁打ち / 議論** (= 任意): skill 設計中に「これでいいか」を skill-reviewer に壁打ちする。何度かやり取りしてよい
-- **判断に迷ったときの第三者視点** (= 任意): main session が依頼者に確認する前に、skill-reviewer に独立視点を取りに行く
+### skill-reviewer の使い方 (= main session 向け、3 用途)
 
-呼ぶのを忘れないために、改修の最終 step として skill-reviewer 呼び出しを規律化する。
+skill 設計 / 改修フェーズ中に skill-reviewer を呼ぶタイミングは 3 用途。手順 6 (= 改修後の最終レビュー、必須) に加えて、設計中も任意で呼べる:
+
+- **改修後の最終レビュー** (= 必須): 改修が一段落したら呼ぶ。手順 6 で規律化されている (= 呼び忘れない)
+- **設計中の壁打ち / 議論** (= 任意・対話的): 設計中に「これでいいか」を skill-reviewer に壁打ちする。何度かやり取りしてよい
+- **判断に迷ったときの第三者視点** (= 任意): main session が依頼者に確認する前に、skill-reviewer に独立視点を取りに行く (= 依頼者の作業時間を圧迫しない)
+
+呼ばれたときの skill-reviewer の振る舞い詳細 (= 各用途で何をするか) は skill-reviewer 本文の「3 用途の使い分け」section を参照 (= subagent 自身の context、main session は直接読まないが、skill-reviewer が用途別に振る舞う前提)。
 
 ### 手順 7: 対話する場面では dialogue-principles を読む
 
