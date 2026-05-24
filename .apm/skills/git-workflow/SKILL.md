@@ -1,5 +1,4 @@
 ---
-name: git-workflow
 description: |
   コード変更を伴う依頼 / セッション開始 / Git 操作の話題、いずれかに該当したら他より先に必ず最初に使う skill。
 
