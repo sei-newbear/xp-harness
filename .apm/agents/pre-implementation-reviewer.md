@@ -118,3 +118,4 @@ model: opus
 - 実装コード / E2E spec のレビューはしない（`code-reviewer` / `e2e-reviewer` の責務）
 - 設計 md を**直接編集しない**（read-only として振る舞う、tools にも Edit/Write は含めていない）
 - 依頼者や main session の代わりに決定を下さない（議論材料として返すだけ）
+- 他 skill の動的発見・発火はしない（`tools:` に Skill を**意図的に含めない**。観点を当てる責務で規約は持たない設計。プロジェクト固有の観点が必要なら main session が事前に整理して渡す方が筋。将来も Skill tool は追加しない方針）

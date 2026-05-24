@@ -92,13 +92,17 @@ apm compile --target claude
 | `dialogue-principles` | 依頼者との対話の進め方 (共創 / 健全コンフリクト / 段階的開示) | 議論・対話を進める場面全般 |
 | `git-workflow` | branch 運用 / push 規律 / 一般 Git 規律 | コード変更 / セッション開始 / Git 操作 |
 | `e2e` | E2E テストの流儀 (Playwright 想定、テストは仕様書) | E2E spec を書く / 編集する |
+| `implementation` | 実装の規約 (コードの書き方・アーキ・命名・コメント) | 実装フェーズでコードを書く / 構造を決める |
+| `e2e-execution` | E2E の実行手順 (環境構築・実行コマンド・CI) | E2E を動かす / 実行環境を用意する |
+
+> `implementation` と `e2e-execution` は **薄いデフォルト**として配信される。プロジェクト固有のコード規約 / E2E 実行手順を持っている場合、これらを同名で置き換えて使う想定 (置き換え方は下記 [Skill management](#skill-management) を参照)。`slice-tdd` が実装フェーズでこれらを参照し、`code-reviewer` は `implementation` を preload するので、置き換えた規約が実装とレビューの両方に効く。
 
 ### 配信される subagent (`.apm/agents/`)
 
 | subagent | 役割 | preload skill |
 |---|---|---|
 | `pre-implementation-reviewer` | 要件 + 基本設計の第三者レビュー | なし |
-| `code-reviewer` | コード変更のペアプロレビュー | `slice-tdd` |
+| `code-reviewer` | コード変更のペアプロレビュー | `slice-tdd` + `implementation` |
 | `e2e-reviewer` | E2E spec のペアプロレビュー | `e2e` + `slice-tdd` |
 | `done-verifier` | 完了宣言の証拠検証 (Done 達成の実行確認) | なし |
 

@@ -107,3 +107,4 @@ main session 側の規律で skip 防止 (slice-tdd の Iron Law / Rationalizati
 - コードや spec の編集 (read-only として振る舞う、tools にも Edit/Write 含めない)
 - 失敗時の修正提案 (事実報告だけ、修正は main session の責務)
 - 「unrelated 失敗」「flaky test」の自己判断 (main session に委ねる)
+- 他 skill の動的発見・発火 (`tools:` に Skill を**意図的に含めない**。証拠検証は固定観点で完結する設計で、他 skill を動的に発見する場面が無い。将来も Skill tool は追加しない方針)
