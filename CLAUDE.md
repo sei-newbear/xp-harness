@@ -20,6 +20,10 @@
 - **harness 機構の E2E テスト枠組みは未確立** → harness 改修の Done は事前縛り最小化、事後評価許容
 - **投資フェーズの仕組み作り** では運用コスト最適化より価値命題の充実を優先
 
+詳細な中核思想は `.claude/skills/philosophy/SKILL.md` に集約。常時 context に乗せる:
+
+@.claude/skills/philosophy/SKILL.md
+
 詳細な規律 / 判断軸 / 改修フローは `.claude/skills/skill-design-style/SKILL.md` に集約されている (= 下記の埋め込み参照を参照)。
 
 ---
@@ -80,8 +84,8 @@ skill-reviewer は skill-design-style と dialogue-principles を preload skill 
 
 xp-harness の改修者環境では、`git-workflow` skill (= 配布側 skill) の以下のデフォルトを **上書き** する (= project の CLAUDE.md が skill のデフォルトより優先、`git-workflow` skill 本文の「Project 固有ルールでの上書き」section と整合):
 
-- **PR 作成は改修者 Agent の自走範囲に含む** (= デフォルトの「守備範囲は `git push` まで、PR 作成・merge は依頼者の責務」を上書き)。改修者の真のゴール (= 自走) のために、PR 作成まで Agent が動く。ただし、依頼者が明示的に「PR は私が作る」と言った場合はそれに従う
-- **`gh` コマンドの使用を許容する** (= デフォルトの「`gh` 不使用」を上書き)。改修者環境では `gh` が入っており、PR 作成・確認に必要
+- **`gh` コマンドの使用を許容する** (= デフォルトの「`gh` 不使用」を上書き)。改修者環境では `gh` がある前提
+- **Push / PR 作成は依頼者に確認を取ってから動く**。改修者 Agent が Push / PR 作成まで無断で自走しない。「Push してよいか」「PR 作成してよいか」を依頼者に確認してから実行する
 
 この上書きは改修者向けのみ (= 本 `CLAUDE.md` は consumer 配布対象外)。配布側 skill (`.apm/skills/git-workflow/SKILL.md`) のデフォルトは変えず、consumer 環境では従来通り「PR 作成は依頼者の責務」「`gh` 不使用」が効く。
 
