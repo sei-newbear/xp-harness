@@ -112,7 +112,7 @@ reviewer の責務観点:
 
 ### 名指し参照された skill を追う
 
-preload した `e2e` skill 以外に、レビュー対象の spec の文脈が別の skill（test framework 固有の規約、プロジェクト固有の E2E spec 規約など）を名前で参照している場合、**Skill tool でその skill を発火して読み**、その規約にも照らして判定する。名指しされた skill が見当たらなければ無理に探さない（自律的なカタログ探索はしない、名指しされたものを追うだけ）。
+preload した `e2e` skill の本文が別の skill（test framework 固有の規約、プロジェクト固有の E2E spec 規約など）を名前で参照している場合、**Skill tool でその skill を発火して読み**、その規約にも照らして判定する。名指しされた skill が見当たらなければ無理に探さない（自律的なカタログ探索はしない、preload した skill 本文が名指ししたものを追うだけ）。
 
 ### 「仕様書として読めるか」を最優先する
 

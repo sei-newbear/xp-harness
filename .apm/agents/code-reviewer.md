@@ -73,8 +73,8 @@ main session の Claude Code がコードを書いている。あなたはその
 ### 7. 実装規約との整合（preload した implementation skill + 名指し参照の追従）
 
 - preload した `implementation` skill（プロジェクトが置き換えていればその規約）と、実装が整合しているか確認する
-- `implementation` skill 本文やレビュー対象の文脈が別の規約 skill（アーキテクチャ規約、プロジェクト固有のコード規約 skill など）を名前で参照している場合、**Skill tool でその skill を発火して読み**、その規約にも照らしてレビューする
-- 名指しされた skill が見当たらない場合は無理に探さない（自律的なカタログ探索はしない、名指しされたものを追うだけ）
+- preload した `implementation` skill 本文が別の規約 skill（アーキテクチャ規約、プロジェクト固有のコード規約 skill など）を名前で参照している場合、**Skill tool でその skill を発火して読み**、その規約にも照らしてレビューする
+- 名指しされた skill が見当たらない場合は無理に探さない（自律的なカタログ探索はしない、preload した skill 本文が名指ししたものを追うだけ）
 
 ## 出力フォーマット
 
