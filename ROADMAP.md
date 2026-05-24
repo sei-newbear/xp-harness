@@ -64,6 +64,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 52 | リリース時に `latest` タグを更新する仕組み | `harness-repo` | `リリース運用` | レビューでの気づき (2026-05-23)、**Tier 1** |
 | 53 | 実装 skill / E2E実行 skill を MVP で新設 + slice-tdd から参照案内追加 | `slice-tdd`, (新規 skill 2 個) | `新規作成`, `機能拡張` | レビューでの気づき (2026-05-23)、**Tier 1** (MVP リリース優先) |
 | 54 | retrospective skill の改善 (= Step 1 「skill / subagent 使用分析」+ Step 3 「分析の honesty 監査」追加) | `retrospective` | `機能拡張`, `方法論導入` | ふりかえりで気づき (2026-05-24)、**Tier 1** (今回セッションで実証済) |
+| 55 | e2e skill 本文の APM 機構言及 (`.apm/skills/e2e/SKILL.md` / `last-installed-wins`) を除去 | `e2e-skill` | `interface純化` | TODO 53 の設計中に発見 (2026-05-24)、TODO 31 と同種 |
 
 ### タグの読み方
 
@@ -1208,6 +1209,24 @@ slice-tdd skill 本文に「実装 skill / E2E実行 skill を参照する」指
 2. retrospective skill 本文の Step 3 に「分析の honesty 監査」を追加 (= 検証できる事実と推測を分けて書け / 内部状態の主張は推測と明示せよ / 綺麗な因果図には捏造のサインを疑え)
 3. 既存 Step との統合の仕方を判断 (= サブ step として明示分離 / 既存 Step 内で項目追加)
 4. retrospective skill の使用例として、今回セッションのふりかえり内容を本文の例に書き加えるか判断
+
+---
+
+## TODO 55: e2e skill 本文の APM 機構言及を除去 (TODO 31 と同種)
+
+### 状況
+
+`.apm/skills/e2e/SKILL.md` 本文 (L9) に APM 機構固有の言及がある:
+
+> 自前で同名 skill を `.apm/skills/e2e/SKILL.md` に置いて last-installed-wins で全体 override する
+
+skill 本文は展開後 (consumer の `.claude/skills/` 等に deploy された状態) でも自然に読める APM 非依存表現で書くべき (skill-design-style の境界原則 2)。`.apm/` パスや `last-installed-wins` は skill 本文の責務外で、APM 機構の話は README / APM 側 instruction に置く。git-workflow の TODO 31 と同種の負債。実装 / E2E実行 skill 新設 (TODO 53) の設計中に発見 (2026-05-24)。
+
+### 再開時の起点
+
+1. `.apm/skills/e2e/SKILL.md` L9 の APM 機構言及を APM 非依存の汎用表現に書き換え (「project 固有のルールで上書き可能、上書き方法はインストール先 agent の仕様に従う」程度)
+2. 上書き機構の具体 (APM の last-installed-wins 等) は README に集約 (TODO 53 で「上書き機構は README に書く」とした方針と整合)
+3. TODO 31 (git-workflow 本文の APM 言及除去) と一緒に「skill 本文の APM 機構 leak 一掃」としてまとめて対応する選択肢も検討
 
 ---
 
