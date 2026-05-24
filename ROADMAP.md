@@ -63,6 +63,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 51 | define-requirements skill に Constraints (制約) を input/output 両面で追加 (引き出し手順 + md セクション) | `define-requirements` | `機能拡張`, `構造改修` | レビューでの気づき (2026-05-20)、**Tier 1** |
 | 52 | リリース時に `latest` タグを更新する仕組み | `harness-repo` | `リリース運用` | レビューでの気づき (2026-05-23)、**Tier 1** |
 | 53 | 実装 skill / E2E実行 skill を MVP で新設 + slice-tdd から参照案内追加 | `slice-tdd`, (新規 skill 2 個) | `新規作成`, `機能拡張` | レビューでの気づき (2026-05-23)、**Tier 1** (MVP リリース優先) |
+| 54 | retrospective skill の改善 (= Step 1 「skill / subagent 使用分析」+ Step 3 「分析の honesty 監査」追加) | `retrospective` | `機能拡張`, `方法論導入` | ふりかえりで気づき (2026-05-24)、**Tier 1** (今回セッションで実証済) |
 
 ### タグの読み方
 
@@ -81,7 +82,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
   - `方法論導入`: eval / TDD / debug 等の方法論導入
 - **温度感**: 着手判断軸 (現時点での主観的優先順位)。タグとは別軸。
 
-### 現在の Tier 1 (着手対象、12 件)
+### 現在の Tier 1 (着手対象、13 件)
 
 選定軸: **「改善サイクルを回せるもの」** + **設計負債で依頼者が明示的に高優先指定したもの** + **ふりかえり由来の改善 (利用者影響なし)** + **公開 OSS リポジトリ運用上の機密性配慮**。
 Tier 2 / Tier 3 は未確定 (痛みが顕在化してから棚卸し)。
@@ -100,6 +101,7 @@ Tier 2 / Tier 3 は未確定 (痛みが顕在化してから棚卸し)。
 | 51 | define-requirements skill に Constraints (制約) input/output 両面追加 | 設計負債 (要件定義 skill の Constraints gap、依頼者 Tier 1 指定) |
 | 52 | リリース時に `latest` タグを更新する仕組み | リリース運用 (依頼者 Tier 1 指定) |
 | 53 | 実装 skill / E2E実行 skill を MVP で新設 | 配布構造 (依頼者 Tier 1 指定、MVP リリース優先) |
+| 54 | retrospective skill の改善 (「skill / subagent 使用分析」+「honesty 監査」) | ふりかえり由来 (2026-05-24 セッションで実証済、harness 内部品質改善) |
 
 **47/48/49 はセットで対応**: ふりかえり.md (`docs/working/retrospective-skill/ふりかえり.md`) の root cause 分析「規律を判断軸として持っているだけで具体 action / 強制チェックポイントが無い + 規律間の関係性が整理されていない」への複合対応。利用者影響なしの harness 内部改善。
 
@@ -1171,6 +1173,41 @@ slice-tdd skill 本文に「実装 skill / E2E実行 skill を参照する」指
 4. slice-tdd skill 本文に「両 skill を参照する」指示を追加
 5. consumer 上書きパターンを README / instruction でも明示 (= 既存 e2e skill の上書きパターンと整合)
 6. 既存 TODO 27 / 35 の整理判断 (= 重複部分の統廃合、本 TODO 53 で吸収された部分の欠番化検討)
+
+---
+
+## TODO 54: retrospective skill の改善 (= 「skill / subagent 使用分析」サブ step 追加 + 「分析の honesty 監査」追加)
+
+### 状況
+
+2026-05-24 のふりかえりで retrospective skill 自体に 2 つの欠落が実証された。今回のセッションでこの 2 つを補強したら原因の言語化が大幅に深まったので、skill 本体に組み込む価値あり。
+
+#### 「skill / subagent 使用分析」サブ step が Step 1 に無い
+
+現状の Step 1 (= 情報収集) は「よかった点 / 伸びしろ」をフラットに出すだけで、**skill 選択 / subagent 利用の妥当性** を見る視点が無い。harness の主要価値レバーは skill と subagent の選択 / 起動 / タイミングなのに、ふりかえりがそこを見ないと表面の伸びしろしか拾えない。
+
+確認すべき項目:
+
+- 利用可能だった skill / subagent
+- 明示発火 / 起動した skill / subagent
+- 「必ず発火」と書いてあるのに発火しなかった skill、呼ぶべきタイミングで呼ばなかった subagent
+- 順序ミス / タイミングミス
+- 暗黙適用で済ませた skill
+
+今回のセッションで「skill 使用分析」を入れたら、表面の伸びしろが「skill 順序問題の現れ」として再分類され、根本原因の言語化が進んだ。同じ視点を subagent (= code-reviewer / e2e-reviewer / pre-implementation-reviewer / done-verifier / skill-reviewer) にも当てる必要あり (= subagent は Opus コストもかかるので、呼んだ / 呼ばなかったの判断軸の妥当性確認は価値が高い)。
+
+#### 「分析の honesty 監査」が Step 3 に無い
+
+現状の Step 3 (= 深掘り分析) は「main session が自己分析を出す」と書いてあるが、その自己分析が **後付けで捏造された因果連鎖** でないかを検証する仕組みが無い。
+
+今回のセッションで main session は「もっともらしい原因」を 3 つ並べ、user の指摘 (= 「それぞれ本当か?」) を受けて初めて捏造に気付いた。skill 側に「分析の honesty 監査」(= 検証できる事実と推測を分けて書け / 内部状態の主張は推測と明示せよ / 綺麗な因果図には捏造のサインを疑え) が組み込まれていれば、user の指摘無しでも 1 段深く降りられる可能性。
+
+### 再開時の起点
+
+1. retrospective skill 本文の Step 1 に「skill / subagent 使用分析」サブ step を追加 (= 利用可能だった / 明示発火・起動した / 必ず発火と書いてあるのに発火しなかった skill, 呼ぶべきタイミングで呼ばなかった subagent / 順序・タイミングミス / 暗黙適用、の項目)
+2. retrospective skill 本文の Step 3 に「分析の honesty 監査」を追加 (= 検証できる事実と推測を分けて書け / 内部状態の主張は推測と明示せよ / 綺麗な因果図には捏造のサインを疑え)
+3. 既存 Step との統合の仕方を判断 (= サブ step として明示分離 / 既存 Step 内で項目追加)
+4. retrospective skill の使用例として、今回セッションのふりかえり内容を本文の例に書き加えるか判断
 
 ---
 
