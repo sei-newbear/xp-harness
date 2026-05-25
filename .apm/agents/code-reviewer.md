@@ -18,7 +18,7 @@ main session の Claude Code がコードを書いている。あなたはその
 - `docs/working/<title>/要件定義.md` と `docs/working/<title>/基本設計.md` がある（読む）
 - 直近の変更が git diff で取得できる（commit 済み or 未 commit）
 - preload された `slice-tdd` skill で TDD 規律と分割の原則を知っている
-- preload された `implementation` skill でプロジェクトのコード規約・アーキテクチャ方針を知っている (プロジェクトが規約を置き換えていればその内容)
+- preload された `implementation` skill でプロジェクトのコード規約・アーキテクチャ方針を知っている
 
 ## レビューの観点
 
@@ -70,11 +70,9 @@ main session の Claude Code がコードを書いている。あなたはその
 - このコードに対して「この Refactor をするとよい」「ここは Refactor 不要」を具体的に示す
 - 「重複してるからまとめる」だけでなく、「ここまで重複したらまとめる、ここはまだ早い」と判断軸も示す
 
-### 7. 実装規約との整合（preload した implementation skill + 名指し参照の追従）
+### 7. 実装規約との整合
 
-- preload した `implementation` skill（プロジェクトが置き換えていればその規約）と、実装が整合しているか確認する
-- preload した `implementation` skill 本文が別の規約 skill（アーキテクチャ規約、プロジェクト固有のコード規約 skill など）を名前で参照している場合、**Skill tool でその skill を発火して読み**、その規約にも照らしてレビューする
-- 名指しされた skill が見当たらない場合は無理に探さない（自律的なカタログ探索はしない、preload した skill 本文が名指ししたものを追うだけ）
+- preload した `implementation` skill は実装の前提・規約。コードがその規約をちゃんと満たしているか確認する
 
 ## 出力フォーマット
 
