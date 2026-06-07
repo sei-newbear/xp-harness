@@ -1,5 +1,5 @@
 ---
-description: xp-harness の skill / subagent の改修が実際に効いているか (発火するか・意図どおり振る舞うか) を、sandbox 環境での実走と transcript 解析で事実確認する検証手順。skill / subagent を改修した後に動作検証したいとき、「検証したい」「発火するか確かめたい」と言われたときに発火させる。良し悪しの測定 (評価・ベンチマーク) は扱わない。
+description: xp-harness の skill / subagent の改修が実際に効いているか (発火するか・意図どおり振る舞うか) を、sandbox 環境での実走と transcript 解析で事実確認する検証手順。skill / subagent を改修した後に動作検証したいとき、「検証したい」「発火するか確かめたい」と言われたときに発火させる。発火・振る舞いの事実確認に限定 (良し悪しの測定・評価・ベンチマークはしない)。
 ---
 
 # harness 検証 — skill / subagent の発火・振る舞いの事実確認
