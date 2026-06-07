@@ -31,10 +31,21 @@ skill / subagent を改修しても、それが実際に発火するか・意図
 **sandbox の用意** — 新規に作るなら:
 
 ```bash
-.claude/skills/harness-verification/scripts/setup-sandbox.sh <名前>
+.claude/skills/harness-verification/scripts/setup-sandbox.sh <名前>          # 既定: front/api 分離の Web アプリ構成
+.claude/skills/harness-verification/scripts/setup-sandbox.sh <名前> --bare   # 最小構成 (git repo + apm install のみ)
 ```
 
 `<xp-harness の親ディレクトリ>/xp-harness-test/<名前>/` に git repo + apm install 済の sandbox ができる (改修中の xp-harness をローカル依存で deploy)。既存 sandbox の使い回しでよいかは改修者と判断する。**改修内容を sandbox に反映するには、改修を commit してから sandbox で `apm install` し直す** (apm はローカル依存でも git の内容を見る)。
+
+既定の構成は front (Vite + React) / api (Hono) / e2e (Playwright、webServer で両サーバ自動起動、スモーク spec つき) の分離構成で、探索型スキル (implementation / e2e / e2e-execution) が探し当てる先として以下を同梱する:
+
+- **領域別スキル**: `front-implementation` / `api-implementation`。わざと対照的な規約 (front: interface のみ + コメント禁止、api: type のみ + JSDoc 必須) にしてあり、領域をまたぐ実装で規約の混線が起きたか grep で観測できる (例: api 配下に `interface` が出たら混線)
+- **front E2E 流儀スキル**: `e2e-playwright-front` (探索の「スキルなら呼ぶ」枝の対象)
+- **実行手順ドキュメント**: `e2e/README.md` (探索の「スキルでないファイルは読む」枝の対象)
+
+同梱スキルは配布物ではなく、consumer プロジェクトが持つ固有スキルの形を模した検証材料 (配布側の e2e skill と sync させる対象ではない)。「検証材料である」という注記を template 側の SKILL.md に書かないのは意図的 — sandbox に複製されて検証セッション自身が読むため、観測を汚す。同梱スキルが探索型スキルに実際に探し当てられるかは検証ランで観測して確定する (同形の構成で探索発火・混線ゼロの実績あり)。
+
+プローブによる連鎖発火確認などアプリが不要な検証は `--bare` で安く作る。
 
 **途中状態の仕込み** — 目的に応じて選ぶ:
 
