@@ -8,11 +8,13 @@ apm.lock.yaml
 # - philosophy: 中核思想 skill (改修者向け)
 # - release: リリース手順 skill (改修者向け)
 # - skill-design-style: skill 設計の流儀 skill (改修者向け)
+# - harness-verification: harness 検証手順 skill (改修者向け)
 # - skill-reviewer: skill レビュー subagent (改修者向け)
 .claude/skills/*
 !.claude/skills/philosophy/
 !.claude/skills/release/
 !.claude/skills/skill-design-style/
+!.claude/skills/harness-verification/
 .claude/agents/*
 !.claude/agents/skill-reviewer.md
 
