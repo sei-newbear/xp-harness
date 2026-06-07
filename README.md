@@ -91,11 +91,11 @@ apm compile --target claude
 | `propose-options` | 複数案 + メリデメ + 推奨を提示 (責務適合性で推す) | 設計判断 / ライブラリ選定が複数ありえる場面 |
 | `dialogue-principles` | 依頼者との対話の進め方 (共創 / 健全コンフリクト / 段階的開示) | 議論・対話を進める場面全般 |
 | `git-workflow` | branch 運用 / push 規律 / 一般 Git 規律 | コード変更 / セッション開始 / Git 操作 |
-| `e2e` | E2E テストの流儀 (Playwright 想定、テストは仕様書) | E2E spec を書く / 編集する |
+| `e2e` | E2E テストの流儀 (触る範囲の流儀を探して従う) | E2E spec を書く / 編集する |
 | `implementation` | 実装の規約 (コードの書き方・アーキ・命名・コメント) | 実装フェーズでコードを書く / 構造を決める |
 | `e2e-execution` | E2E の実行手順 (環境構築・実行コマンド・CI) | E2E を動かす / 実行環境を用意する |
 
-> `implementation` と `e2e-execution` は **薄いデフォルト**として配信される。プロジェクト固有のコード規約 / E2E 実行手順を持っている場合、これらを同名で置き換えて使う想定 (置き換え方は下記 [Skill management](#skill-management) を参照)。`slice-tdd` が実装フェーズでこれらを参照し、`code-reviewer` は `implementation` を preload するので、置き換えた規約が実装とレビューの両方に効く。
+> `implementation` / `e2e` / `e2e-execution` は **薄いデフォルト**として配信され、触る範囲に対応するプロジェクトの規約・流儀・実行手順を探して従う探索型の入口になっている。プロジェクト固有の規約を持っている場合、領域別のスキル (例: front 用 / api 用) を登録すればこれらの既定が触る範囲に応じて振り分けるほか、同名で置き換えることもできる (置き換え方は下記 [Skill management](#skill-management) を参照)。`slice-tdd` が実装フェーズでこれらを参照し、`code-reviewer` は `implementation` を preload するので、規約が実装とレビューの両方に効く。
 
 ### 配信される subagent (`.apm/agents/`)
 
