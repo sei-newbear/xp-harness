@@ -78,7 +78,6 @@ skill が呼ばれたら以下の Step を順番に実行する。
 apm install --target claude
 # Content hash mismatch が出たら (= APM のサプライチェーン検出機構、想定挙動)
 apm install --update --target claude
-apm compile --target claude
 ```
 
 詳細は README "Update" セクション参照。

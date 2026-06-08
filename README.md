@@ -39,33 +39,15 @@ xp-harness/
 APM CLI 未 install の場合は [公式 Quickstart](https://microsoft.github.io/apm/quickstart/) を参照。
 
 ```bash
-# xp-harness を取り込む
+# xp-harness を取り込む (skill / agent / instruction が .claude/ 配下に deploy される)
 apm install sei-newbear/xp-harness#v0.3.0 --target claude
-
-# CLAUDE.md を生成 (harness の instruction + 自前 instruction を bundle)
-apm compile --target claude
 ```
 
-### 初回 install 前の migrate 手順
+Claude Code は instruction を `.claude/rules/` から直接読むため、**`apm install` だけで完結する**。`apm compile` は不要 (compile はルート単一ファイル `AGENTS.md` / `GEMINI.md` への集約を要する Codex / Gemini 等のための工程。Claude には `.claude/rules/` という native な置き場があるので回さない)。
 
-`apm compile --target claude` は **CLAUDE.md を完全上書き**する。consumer に既存 CLAUDE.md がある場合、その中身を `.apm/instructions/<own>.md` 等に **事前に移してから** install + compile を実行する。さもなくば既存 CLAUDE.md は失われる。
+### 既存 CLAUDE.md について
 
-```bash
-# 既存 CLAUDE.md を退避
-mkdir -p .apm/instructions
-mv CLAUDE.md .apm/instructions/local-rules.instructions.md
-
-# 退避した instruction の冒頭に frontmatter を追加
-# ---
-# applyTo: "**"
-# description: <project 固有ルール>
-# ---
-# (中身)
-
-# その後 install + compile
-apm install sei-newbear/xp-harness#v0.3.0 --target claude
-apm compile --target claude
-```
+`apm install` は consumer のルート `CLAUDE.md` を **触らない**。xp-harness の運用ルールは `.claude/rules/main.md` に deploy され、Claude Code が起動時に `CLAUDE.md` と並べて読む。consumer は自分の `CLAUDE.md` をそのまま持っていてよい (退避・移動は不要)。
 
 ## Audience and supported agents
 
@@ -108,7 +90,7 @@ apm compile --target claude
 
 ### 配信される instruction (`.apm/instructions/`)
 
-- `main.instructions.md`: xp-harness の core 運用ルール (XP discipline / phase-driven skill / pair-programming subagent / 横断ルール / 対話の型 / 実装中のルール)。`apm compile` で CLAUDE.md に bundle される
+- `main.instructions.md`: xp-harness の core 運用ルール (XP discipline / phase-driven skill / pair-programming subagent / 横断ルール / 対話の型 / 実装中のルール)。`apm install` で `.claude/rules/main.md` に deploy され、Claude Code が起動時に読む
 
 ### 配信されない (改修者用、`.claude/skills/`)
 
@@ -138,7 +120,7 @@ project-root/
 
 consumer の `.apm/skills/<harness-skill>/` に harness と同名 skill を置くと **「last-installed-wins」** で override される (warning 表示)。**ファイル全体置換**、partial / section 単位の override は不可。
 
-consumer が部分的にカスタマイズしたい場合は、別 skill 名で新規作成するか、`.apm/instructions/<custom>.md` で追加ルールを書く (compile で CLAUDE.md に bundle される)。
+consumer が部分的にカスタマイズしたい場合は、別 skill 名で新規作成するか、`.apm/instructions/<custom>.md` で追加ルールを書く (`apm install` で `.claude/rules/<custom>.md` に deploy される)。
 
 ## Update
 
@@ -164,11 +146,7 @@ apm install --target claude
 apm install --update --target claude
 ```
 
-最後に CLAUDE.md を再生成:
-
-```bash
-apm compile --target claude
-```
+`apm install` が更新分を `.claude/` 配下に再 deploy するので、これで完了 (`apm compile` は不要)。
 
 ### skill 削除があった version の対応
 
@@ -209,7 +187,6 @@ claude                                # philosophy + .apm/ 配下の skill / age
 - self-host (dogfooding) の実現
 - `.apm/instructions/main.md` の section 分割精査
 - cross-agent 対応 (Cursor 等への移植)
-- 初回 install 時の CLAUDE.md 退避カスタムコマンド
 
 ## License
 
