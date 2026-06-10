@@ -79,6 +79,8 @@ remote が進んでいて pull したい場合、**手元を先に整理する**
 
 worktree / branch 作成判断は **必ず `AskUserQuestion` ツールで選択肢を提示**して、user の affirmative な選択を取る。チャットで「〜で切ります、違ったら教えてください」のように書いて即作成するのは禁止 — 沈黙を同意と扱うと、user が想定しない worktree / branch / タイミング / base ができて事故る。**`auto mode` でも例外なし** (worktree / branch 作成は routine decision ではなく state-changing operation)。
 
+**推奨は常に worktree に置く**。タスクの軽重を理由に推奨を branch に入れ替えない (軽いタスクでも worktree のコストは小さく、並行作業の自由は常に価値がある)。branch で十分かどうかは user が選択肢の中から自分で選ぶ。
+
 ### セッション開始時 — 現在地にかかわらず必ず確認
 
 新セッション / `/clear` 直後の同期確認 (上記 §セッション開始時の同期確認) の後、必ず `AskUserQuestion` を出す。**別 branch / worktree にいるからといって skip しない** — 前 session の続きか / 新 task か / 違うことやりたいか、user に確認しないと事故る。
