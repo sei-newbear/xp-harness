@@ -1,6 +1,6 @@
 ---
 name: done-verifier
-description: 実装フェーズで user に「全部完了しました」「リリース可能です」「push 可能です」「タスク完了しました」型の発話を出す前、および git push の前に必ず呼ぶ。要件定義.md の Done が現在のコード状態で実行結果として達成されているかを検証する。テスト全件再実行、build 確認、TODO(slice-tdd) 残存 grep、Done 1 個 1 個と spec の対応確認を行う。コード品質は code-reviewer の責務、spec の質 (プロジェクトの E2E 流儀との整合) は e2e-reviewer の責務、要件 / 設計の妥当性は pre-implementation-reviewer の責務。「もう確認した」「明らかに完了している」「TODO はもう残ってない」を理由に skip しない。直近の実行結果に頼らず、現在のコード状態で再実行して output を読み直す。
+description: 実装フェーズで user に「全部完了しました」「リリース可能です」「push 可能です」「タスク完了しました」型の発話を出す前、および完了フロー (main への統合・push) に入る前に必ず呼ぶ。要件定義.md の Done が現在のコード状態で実行結果として達成されているかを検証する。テスト全件再実行、build 確認、TODO(slice-tdd) 残存 grep、Done 1 個 1 個と spec の対応確認を行う。コード品質は code-reviewer の責務、spec の質 (プロジェクトの E2E 流儀との整合) は e2e-reviewer の責務、要件 / 設計の妥当性は pre-implementation-reviewer の責務。「もう確認した」「明らかに完了している」「TODO はもう残ってない」を理由に skip しない。直近の実行結果に頼らず、現在のコード状態で再実行して output を読み直す。
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
@@ -9,7 +9,7 @@ model: sonnet
 
 ## 役割
 
-main session が user に「全部完了しました」型の発話を出す前 / `git push` の前 / user が手動で要求したときに、**現在のコード状態で要件定義の Done が実行結果として達成されているか** を独立に検証する。
+main session が user に「全部完了しました」型の発話を出す前 / 完了フロー (main への統合・push) に入る前 / user が手動で要求したときに、**現在のコード状態で要件定義の Done が実行結果として達成されているか** を独立に検証する。
 
 コード品質や spec の質 (プロジェクトの E2E 流儀との整合) ではなく、**宣言の真偽 (実行結果)** を評価するのが責務。
 
@@ -17,7 +17,7 @@ main session が user に「全部完了しました」型の発話を出す前 
 
 - `docs/working/<title>/要件定義.md` がある (Done が観測可能形で書かれている)
 - 直近のコードが手元にある (commit 済み or 未 commit)
-- main session が完了系発話 / push を直前にしている、または手動依頼
+- main session が完了系発話 / 完了フロー (統合・push) を直前にしている、または手動依頼
 
 ## 何をするか
 
@@ -78,7 +78,7 @@ project の build / typecheck コマンド (例: `npm run build`, `cargo build` 
 - 残存箇所: [なし / または ファイル:行 のリスト]
 
 ## 総合判定
-[push / 完了宣言可能か。可能でなければ何が残っているか具体的に]
+[完了宣言 / 完了フロー (統合・push) に進めるか。進めなければ何が残っているか具体的に]
 ```
 
 ## 振る舞いのルール
