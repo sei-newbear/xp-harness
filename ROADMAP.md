@@ -65,6 +65,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 53 | (欠番、完了 2026-05-31 — PR #5 MERGED。`implementation` / `e2e-execution` skill 新設、slice-tdd per-step 参照、reviewer の Skill tool 連携で TODO 36 も消化) | — | — | — |
 | 54 | retrospective skill の改善 (= Step 1 「skill / subagent 使用分析」+ Step 3 「分析の honesty 監査」追加) | `retrospective` | `機能拡張`, `方法論導入` | ふりかえりで気づき (2026-05-24)、**Tier 1** (今回セッションで実証済) |
 | 55 | (欠番、完了 2026-06-07 — e2e 薄型化で APM 機構言及ごと本文を置き換え) | — | — | — |
+| 56 | xp-harness 自身を worktree で並行開発できる環境整備 (改修者 dogfooding) | `harness-repo`, `scripts/setup-dev.sh` | `自己適用` | 利用者向け git-workflow worktree 化が本丸、改修者側は派生として保留 |
 
 ### タグの読み方
 
@@ -1155,6 +1156,28 @@ slice-tdd skill 本文に「実装 skill / E2E実行 skill を参照する」指
 ## TODO 55: (欠番)
 
 完了として削除 (2026-06-07)。e2e skill の薄型化で本文を全面置き換えし、APM 機構言及も消滅した。TODO 31 (git-workflow 本文の APM 言及除去) は引き続き未対応。
+
+---
+
+## TODO 56: xp-harness 自身を worktree で並行開発できる環境整備 (改修者 dogfooding)
+
+### 状況
+
+「git-workflow worktree 化」案件 (`docs/working/git-workflow-worktree/`) の主成果は **利用者向け** (consumer に配る git-workflow skill を worktree 化し、任意プロジェクトで Claude = worktree 側 / ユーザー = メイン側の並行作業を成立させる)。本 TODO はその派生で、**xp-harness 自身を worktree で並行開発できるようにする改修者側 (dogfooding) の環境整備**。
+
+spike (`docs/working/git-workflow-worktree/worktree-scope-spike-メモ.md` の section 5) で判明した固有事情:
+
+- xp-harness の worktree を作ると、`.claude/skills/` には改修者向けの実体ディレクトリ (philosophy / release / skill-design-style 等) だけが来て、**consumer 向け skill / agent の symlink (git-workflow 等) は来ない** (`.gitignore` 非追跡のため)
+- worktree 内で `scripts/setup-dev.sh` を再実行すると symlink が復旧する (相対 symlink が worktree 内で解決することは実測済)
+- → xp-harness 自身を worktree で動かすなら「worktree 作成後に setup-dev.sh 再実行で symlink 復旧」のステップが要る
+
+過去の TODO 1 (self-host、2026-05-17 完了削除「本格対応は痛みが見えてから新規 TODO で起こす」) の系譜にある dogfooding 案件。
+
+### 再開時の起点
+
+1. xp-harness を worktree で並行開発する運用フローを定義 (worktree 作成 → setup-dev.sh 再実行 → 並行作業)
+2. setup-dev.sh 再実行を worktree セットアップに自動で織り込めるか検討 (手動ステップを減らす)
+3. 利用者向け git-workflow worktree 化 (本丸) の設計が固まってから、その knowhow を改修者側にも適用するか判断
 
 ---
 
