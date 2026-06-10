@@ -27,12 +27,13 @@ xp-harness/
 │   └── instructions/main.instructions.md
 │
 └── .claude/                             # ★ APM 管理外、harness 改修者用 (git clone した人だけ使う)
-    └── skills/
-        └── philosophy/SKILL.md
+    ├── skills/                          # philosophy / release / skill-design-style / harness-verification / review-recording
+    └── agents/
+        └── skill-reviewer.md
 ```
 
 - `.apm/` 配下は APM 配信対象。一般利用者の `apm install` で `.claude/skills/`, `.claude/agents/`, `.claude/rules/` に deploy される
-- `.claude/` 配下 (philosophy skill) は **APM 管理外**、配信されない。harness 改修者が git clone して直接利用する
+- `.claude/` 配下 (改修者向け skill / agent) は **APM 管理外**、配信されない。harness 改修者が git clone して直接利用する
 
 ## Install
 
@@ -72,7 +73,7 @@ Claude Code は instruction を `.claude/rules/` から直接読むため、**`a
 | `story-slicing` | ユーザーストーリー INVEST 点検 + 分割 | 要件定義完成直後 |
 | `propose-options` | 複数案 + メリデメ + 推奨を提示 (責務適合性で推す) | 設計判断 / ライブラリ選定が複数ありえる場面 |
 | `dialogue-principles` | 依頼者との対話の進め方 (共創 / 健全コンフリクト / 段階的開示) | 議論・対話を進める場面全般 |
-| `git-workflow` | branch 運用 / push 規律 / 一般 Git 規律 | コード変更 / セッション開始 / Git 操作 |
+| `git-workflow` | worktree / branch 運用、完了時の main 統合、push 規律、一般 Git 規律 | コード変更 / セッション開始 / Git 操作 |
 | `e2e` | E2E テストの流儀 (触る範囲の流儀を探して従う) | E2E spec を書く / 編集する |
 | `implementation` | 実装の規約 (コードの書き方・アーキ・命名・コメント) | 実装フェーズでコードを書く / 構造を決める |
 | `e2e-execution` | E2E の実行手順 (環境構築・実行コマンド・CI) | E2E を動かす / 実行環境を用意する |
@@ -92,9 +93,16 @@ Claude Code は instruction を `.claude/rules/` から直接読むため、**`a
 
 - `main.instructions.md`: xp-harness の core 運用ルール (XP discipline / phase-driven skill / pair-programming subagent / 横断ルール / 対話の型 / 実装中のルール)。`apm install` で `.claude/rules/main.md` に deploy され、Claude Code が起動時に読む
 
-### 配信されない (改修者用、`.claude/skills/`)
+### 配信されない (改修者用、`.claude/skills/` / `.claude/agents/`)
 
-- `philosophy`: harness を改修するときの判断軸 (価値で導きつつ規律装置最小注入 / ペアプロ哲学 / 中央集権より decentralized / outside-in 例外なし / 対話と自走の境界 / INVEST の取捨 / 共創を目指す対話)。harness 改修者が `.claude/skills/philosophy/` を git clone してきた状態で Claude Code が認識する
+harness 改修者が git clone してきた状態で Claude Code が認識する (APM 管理外、配信されない):
+
+- `philosophy`: harness を改修するときの判断軸 (価値で導きつつ規律装置最小注入 / ペアプロ哲学 / 中央集権より decentralized / outside-in 例外なし / 対話と自走の境界 / INVEST の取捨 / 共創を目指す対話)
+- `skill-design-style`: skill / agent を新規作成・改修するときの設計の流儀 (構造 / 境界原則 / description の書き方 / 改修フロー)
+- `release`: version を上げて GitHub Release を作る手順
+- `harness-verification`: skill / subagent の改修が実際に効いているか (発火・振る舞い) を sandbox 実走と transcript 解析で事実確認する手順
+- `review-recording`: harness 本体のレビュー中に依頼者の気づきを ROADMAP 等へ記録していく振る舞い
+- `skill-reviewer` (subagent, `.claude/agents/`): skill / agent 改修の最終レビュー・設計中の壁打ち相手
 
 ## Skill management
 
