@@ -177,6 +177,8 @@ commit は高頻度 OK (TDD サイクル毎の commit は実装 skill の責務)
 
 done-verifier の検証は**統合手順に入る前** (branch が生きていて、まだ何も統合していない状態) に通す。検証は「外に出る前の最後の砦」であり、統合・削除の後に検証する順序にしない。
 
+要件定義.md が無い定型タスク (タイポ修正・1 行追記等) では done-verifier の前提 (検証対象の Done) が立たないため、呼ばなくてよい。ただし**検証を省いた事実と理由を完了報告に含める** (user が検証なしで統合してよいか判断できるように)。黙って省かない。
+
 ### 2. 前提を確認する
 
 - **project 固有の Git 運用ルール**: project の instruction (CLAUDE.md 等) に Git 運用の記載があれば、統合確認の選択肢と推奨をそれに合わせる。例えば「PR 必須 / main 直 push 禁止」とあれば「main に統合」を出さず、「branch のまま push (PR 運用)」を既定にする
@@ -209,7 +211,7 @@ options:
 2. 手元の main を最新化: `git -C <メインrepoパス> pull`
 3. worktree 内で `git rebase main` — branch の commit を最新 main の上に乗せ直す
 4. rebase で conflict したら user に状況共有 (黙って解決しない)。解決して進めた場合は**テストを再実行**してから次へ (conflict が無ければ再実行は不要 — テスト済みの成果をそのまま乗せる)
-5. メイン repo に戻り (worktree から抜ける)、`git merge --ff-only <branch名>` — rebase 済みなので必ず fast-forward。できない場合は想定とずれているサイン、無理に進めず user に報告
+5. **worktree から抜けてメイン repo に戻ってから**、`git merge --ff-only <branch名>` — rebase 済みなので必ず fast-forward。できない場合は想定とずれているサイン、無理に進めず user に報告。worktree に居たまま `git -C <メインrepoパス>` で遠隔実行しない (次の後始末まで worktree の中から実行することになり、自分の作業ディレクトリが宙吊りになる)
 6. 後始末: `git worktree remove <worktreeパス>` → `git branch -d <branch名>`。統合済みなので即消せる (push を待たない — 成果はローカル main の履歴に入っており、push が失敗しても失われない)
 7. `git push origin main`
 
@@ -234,7 +236,7 @@ PR 作成はお願いします。worktree ../<repo>-worktrees/feat-xxx は残っ
 
 ## worktree / branch の削除規律
 
-- **worktree の削除は必ずメイン repo 側から実行する**。worktree の中から自分を消すと git は拒否せず消してしまい、作業ディレクトリが宙吊りになる。worktree にいる場合はメインに戻ってから `git worktree remove`
+- **worktree の削除は必ずメイン repo 側から実行する**。worktree の中から自分を消すと git は拒否せず消してしまい、作業ディレクトリが宙吊りになる。`git -C <メインrepoパス>` を使って worktree の中から消すのも同じ (cwd がその worktree に居る限り宙吊りになる)。必ず先に worktree から抜けてメインに戻り、それから `git worktree remove`
 - **branch 削除は `git branch -d` (安全側) 限定**。`-D` (強制) は使わない。`-d` が拒否される = 未統合の何かが残っているサインなので、止まって user に報告
 - **`git worktree remove` が未コミット変更で拒否されたら**、`--force` を勝手に使わず user に確認
 
