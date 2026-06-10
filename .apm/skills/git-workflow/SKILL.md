@@ -25,7 +25,7 @@ description: |
 
 - **守備範囲は「確認を取った統合」と `git push` まで**: 完了時に user の affirmative な確認を取った上で、main への統合 (ローカル merge) と push まで行う。**PR 作成・PR 上の merge は依頼者の責務**。あなたが PR を立ててはいけない
 - **worktree 運用を推奨**: 新規 task は repo の外に worktree を切って進めると、user が元 repo で並行作業できる (あなたの作業と踏み合わない)。branch のみの軽量運用も同じ軽さで選べる
-- **完了時は main へ統合が既定 (トランクベース)**: 開発完了 (テスト含む) → 報告 → 確認 → main へ統合 & worktree / branch 削除 → push の流れ。「branch のまま push (PR 運用)」「保留」も選べる
+- **完了時は main へ統合が既定**: 開発完了 (テスト含む) → 報告 → 確認 → main へ統合 & worktree / branch 削除 → push の流れ。branch は task の間だけの短命なもので、完了時に main へ戻す。「branch のまま push (PR 運用)」「保留」も選べる
 - **Project 固有ルールで override 可能**: PR 必須運用など、現場ルールが違えば project 固有の instruction が優先
 
 ## セッション開始時の同期確認
