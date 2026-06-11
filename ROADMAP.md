@@ -66,6 +66,7 @@ xp-harness を進化させるための保留 TODO リスト。各項目は harne
 | 54 | retrospective skill の改善 (= Step 1 「skill / subagent 使用分析」+ Step 3 「分析の honesty 監査」追加) | `retrospective` | `機能拡張`, `方法論導入` | ふりかえりで気づき (2026-05-24)、**Tier 1** (今回セッションで実証済) |
 | 55 | (欠番、完了 2026-06-07 — e2e 薄型化で APM 機構言及ごと本文を置き換え) | — | — | — |
 | 56 | xp-harness 自身を worktree で並行開発できる環境整備 (改修者 dogfooding) | `harness-repo`, `scripts/setup-dev.sh` | `自己適用` | 利用者向け git-workflow worktree 化が本丸、改修者側は派生として保留 |
+| 57 | dialogue-principles の発火判定を「自走モードでない限り発火」に反転 | `dialogue-principles`, `main-instructions` | `責務境界`, `機能拡張` | ふりかえり由来 (2026-06-11)、**Tier 2** (通常の開発フローでは起きにくい) |
 
 ### タグの読み方
 
@@ -1178,6 +1179,26 @@ spike (`docs/working/git-workflow-worktree/worktree-scope-spike-メモ.md` の s
 1. xp-harness を worktree で並行開発する運用フローを定義 (worktree 作成 → setup-dev.sh 再実行 → 並行作業)
 2. setup-dev.sh 再実行を worktree セットアップに自動で織り込めるか検討 (手動ステップを減らす)
 3. 利用者向け git-workflow worktree 化 (本丸) の設計が固まってから、その knowhow を改修者側にも適用するか判断
+
+---
+
+## TODO 57: dialogue-principles の発火判定を「自走モードでない限り発火」に反転
+
+### 状況
+
+`git-workflow-worktree` 案件のふりかえり (2026-06-11) で、セッション序盤に `dialogue-principles` を一度も発火させないまま要件対話を進め、複数論点を 1 メッセージに詰め込む違反を出した事象を深掘りした。根本原因は「**自走モード以外は全部対話**」という境界が main session に無く、`dialogue-principles` の発火を「議論っぽい場面か?」と入力の**表面の形**で毎回判定して取りこぼしたこと。
+
+今回の入り口は「@ファイルを見て、なにをやりたいか書いてある? 書いてないなら教えて」という read & report の形で、中身は要件定義の入り口 (Why の所在を問う + 共創の合図) だったが、形で「作業」と分類して対話と認識しなかった。同じ「形で分類して中身を見ない」型がセッション内で反復した (README を grep 断片で「書いてある」と早合点、done-verifier を「push 前に直したい」で「両方承認」と拡大解釈)。
+
+対処の方向: `dialogue-principles` の発火条件 (description) の判定の向きを、「対話の場面で発火」(形ベースの列挙) から「**自走モード (実装フェーズ = slice-tdd の責務範囲) に入っている時以外は対話として発火する**」(デフォルト ON / 例外 OFF) へ反転させる。要件定義・基本設計・レビュー共有・判断相談・ふりかえりは自走でない限りすべて対話、という二値の境界にすれば、形での誤分類の余地が消える。
+
+優先度: 通常の開発フロー (実装フェーズ中心) では起きにくく、対話フェーズの入り口という限られた場面の取りこぼしなので **Tier 2**。常時 context への埋め込みは採らない (自走モードでは対話規律は不要で context の無駄かつ自走の邪魔。philosophy / skill-design-style とは性質が違う)。詳細な経緯は `docs/working/git-workflow-worktree/ふりかえり.md`。
+
+### 再開時の起点
+
+1. `dialogue-principles` の description を「自走モードでない限り発火」のデフォルト ON / 例外 OFF の境界で書き直す (具体文言を詰める)
+2. `main.instructions.md` の「議論・対話を進める場面で必ず dialogue-principles を発火」「違和感を感じたら再読」の記述と整合を取る (形ベースの判定を促す表現が残っていないか点検)
+3. 「形で分類して中身を見ない」を一般原則として philosophy に昇格させるかは見送り済み (抽象規律は効きが不確かで規律装置最小注入に反する)。今回は発火境界の修正に閉じる
 
 ---
 
