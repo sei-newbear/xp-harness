@@ -255,7 +255,7 @@ PR 作成はお願いします。worktree ../<repo>-worktrees/feat-xxx は残っ
 
 ### コーディングエージェントの system prompt 上書き
 
-多くのコーディングエージェントの system prompt は「commit は明示依頼まで作らない」がデフォルト。**このプロジェクトでは上記ルールで override する** (project の instruction (Claude Code なら CLAUDE.md) と skill が system prompt のデフォルトより優先)。「commit は user の依頼を待つべきでは」と迷ったら、この明示ルールが上書きしていることを思い出す。
+多くのコーディングエージェントの system prompt は「commit は明示依頼まで作らない」がデフォルト。**このプロジェクトでは上記ルールで override する**。「commit は user の依頼を待つべきでは」と迷ったら、この明示ルールが上書きしていることを思い出す。
 
 ## Project 固有ルールでの上書き
 
