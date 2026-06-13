@@ -1,144 +1,102 @@
 # xp-harness
 
-XP の価値共有で AI コーディングエージェントを動かすハーネス。
+Claude Code に XP スタイルの開発リズムを注入するスキルセット。新機能を依頼すると「なぜ作るのか」から確認し、要件定義 → 基本設計 → 実装フェーズを明示的に踏んで進む。実装フェーズは TDD サイクルで自走し、レビュー系 subagent がペアプロ相手として独立した視点を与える。
 
-要件定義 → 基本設計 → 実装の段階駆動スキルで対話・自走を切り替え、サブエージェントはペアプロ相手として独立視点を与える。「価値で導きつつ、失敗モードが大きい部分にだけ装置を注入する」が中核思想。
-
-現状は Claude Code 対応 (cross-agent 拡張は将来 TODO)。APM (Microsoft Agent Package Manager) で配布。
-
-## Status
-
-**personal harness, work in progress**。
-
-依頼者本人と同チームメンバーの cross-account portability + チーム共有を目的とした個人 OSS。完成度を求める「公式 OSS」段階ではない。外部利用は自由だが、サポート対象外。
-
-## Layout
-
-```
-xp-harness/
-├── README.md                            # このファイル
-├── LICENSE                              # MIT
-├── ROADMAP.md                           # 将来 TODO (改修者向け)
-├── apm.yml                              # APM manifest
-│
-├── .apm/                                # ★ APM 配信対象 (一般 user に届く)
-│   ├── skills/<...>/SKILL.md
-│   ├── agents/<...>.md
-│   └── instructions/main.instructions.md
-│
-└── .claude/                             # ★ APM 管理外、harness 改修者用 (git clone した人だけ使う)
-    ├── skills/                          # philosophy / release / skill-design-style / harness-verification / review-recording
-    └── agents/
-        └── skill-reviewer.md
-```
-
-- `.apm/` 配下は APM 配信対象。一般利用者の `apm install` で `.claude/skills/`, `.claude/agents/`, `.claude/rules/` に deploy される
-- `.claude/` 配下 (改修者向け skill / agent) は **APM 管理外**、配信されない。harness 改修者が git clone して直接利用する
+現状 **Claude Code 専用**。APM (Microsoft Agent Package Manager) で配布。
 
 ## Install
 
 APM CLI 未 install の場合は [公式 Quickstart](https://microsoft.github.io/apm/quickstart/) を参照。
 
 ```bash
-# xp-harness を取り込む (skill / agent / instruction が .claude/ 配下に deploy される)
 apm install sei-newbear/xp-harness#v0.5.0 --target claude
 ```
 
-Claude Code は instruction を `.claude/rules/` から直接読むため、**`apm install` だけで完結する**。`apm compile` は不要 (compile はルート単一ファイル `AGENTS.md` / `GEMINI.md` への集約を要する Codex / Gemini 等のための工程。Claude には `.claude/rules/` という native な置き場があるので回さない)。
+Claude Code は instruction を `.claude/rules/` から直接読むため、**`apm install` だけで完結する**。`apm compile` は不要。
 
 ### 既存 CLAUDE.md について
 
-`apm install` は consumer のルート `CLAUDE.md` を **触らない**。xp-harness の運用ルールは `.claude/rules/main.md` に deploy され、Claude Code が起動時に `CLAUDE.md` と並べて読む。consumer は自分の `CLAUDE.md` をそのまま持っていてよい (退避・移動は不要)。
+`apm install` は consumer のルート `CLAUDE.md` を **触らない**。xp-harness の運用ルールは `.claude/rules/main.md` に deploy され、Claude Code が起動時に `CLAUDE.md` と並べて読む。自分の `CLAUDE.md` はそのまま持っていてよい。
 
-## Audience and supported agents
+## インストール後の体験
 
-### 想定利用者
-- 依頼者本人と同チームメンバー (cross-account portability + チーム共有)
-- 組織内で興味を持った人 (許容、サポート対象外)
-- 外部 OSS user (許容、サポート対象外)
+Claude Code を起動して普通に話しかけると以下が起きる:
 
-### 対応エージェント
-- **Claude Code のみ** (skill / subagent 機構を前提とした設計)
-- cross-agent 対応 (Cursor / Copilot 等) は将来 TODO ([ROADMAP](./ROADMAP.md) #3)
+- **新機能・変更を依頼する** → `define-requirements` が発火し「なぜ作るのか / Done の条件 / スコープ」を引き出してから実装に入る
+- **「実装して」と言う** → `slice-tdd` が TDD サイクルを回し、Red → Green → Refactor → commit を自走する
+- **セッション開始時** → `git-workflow` が fetch・状態確認・worktree 提案を自動で行い、終了時に main への統合まで案内する
+- **Refactor 前** → `code-reviewer` subagent がペアプロ相手として独立視点でコードレビューを行う
 
-## Skills and agents
+スキルの発火は Claude Code の自動判断。`/define-requirements` のように直接呼んで上書きすることもできる。
 
-### 配信される skill (`.apm/skills/`)
+## プロジェクト向けのセットアップ
+
+install 直後はデフォルトの動作で動く。プロジェクト固有のルールや規約を持ち込む方法はスキルの種類によって異なる。
+
+### Git 運用ルールを変えたい
+
+`git-workflow` はデフォルトで worktree 運用・高頻度 commit・main への直接統合で動く。PR 必須運用・trunk-based 開発など、チーム固有のルールがある場合は `.apm/instructions/` に書く:
+
+```
+.apm/instructions/git-rules.md
+```
+
+```
+PR 必須。main への直 push 禁止。branch のまま push して PR を作る。
+```
+
+`apm install` で `.claude/rules/git-rules.md` に deploy され、`git-workflow` が読んで動作を調整する。
+
+### コード規約・アーキテクチャ方針を入れたい
+
+`implementation` スキルは薄い探索型のデフォルトとして配信されており、触る領域に対応するプロジェクト側スキルを探して呼び出す。プロジェクト固有の規約は領域別スキルとして `.apm/skills/` に追加する:
+
+```
+.apm/skills/api-implementation/SKILL.md   # API 層の規約
+.apm/skills/front-implementation/SKILL.md # フロント層の規約
+```
+
+`implementation` スキルが自動で発見して従うので、base スキル自体を置き換える必要はない。`code-reviewer` subagent は `implementation` を preload するため、規約が実装とレビューの両方に効く。
+
+### E2E の流儀を入れたい
+
+`e2e` / `e2e-execution` も同じ探索型で、プロジェクト側の E2E スキルを自動発見する:
+
+```
+.apm/skills/e2e-playwright-front/SKILL.md  # front の E2E 規約・流儀
+```
+
+Playwright 以外のフレームワークへの切り替えも、同名で全体置換することで対応できる（後述）。
+
+### harness スキルを丸ごと置き換えたい
+
+harness と同名のスキルを `.apm/skills/<harness-skill>/` に置くと **「last-installed-wins」** で全体置換される。ファイル全体置換のみ対応で、section 単位の部分 override は不可。harness の更新への追従は自己管理になる。
+
+## スキル・subagent 一覧
+
+### 配信されるスキル
 
 | skill | 責務 | 発火タイミング |
 |---|---|---|
 | `define-requirements` | 要件定義フェーズ (Why / Done / スコープ引き出し) | 新規・変更・削除・改善要望 |
 | `basic-design` | 基本設計フェーズ (アーキ / ER / シーケンス / 論理設計) | 要件確定後、「設計を進めて」 |
-| `slice-tdd` | 実装フェーズ全般 (TDD 規律、Red→Green→Refactor→Commit) | コード書く / テスト書く / リファクタ / バグ修正 |
+| `slice-tdd` | 実装フェーズ全般 (TDD 規律、Red→Green→Refactor→Commit) | コードを書く / テスト / リファクタ / バグ修正 |
 | `story-slicing` | ユーザーストーリー INVEST 点検 + 分割 | 要件定義完成直後 |
-| `propose-options` | 複数案 + メリデメ + 推奨を提示 (責務適合性で推す) | 設計判断 / ライブラリ選定が複数ありえる場面 |
-| `dialogue-principles` | 依頼者との対話の進め方 (共創 / 健全コンフリクト / 段階的開示) | 議論・対話を進める場面全般 |
-| `git-workflow` | worktree / branch 運用、完了時の main 統合、push 規律、一般 Git 規律 | コード変更 / セッション開始 / Git 操作 |
-| `e2e` | E2E テストの流儀 (触る範囲の流儀を探して従う) | E2E spec を書く / 編集する |
-| `implementation` | 実装の規約 (コードの書き方・アーキ・命名・コメント) | 実装フェーズでコードを書く / 構造を決める |
-| `e2e-execution` | E2E の実行手順 (環境構築・実行コマンド・CI) | E2E を動かす / 実行環境を用意する |
+| `propose-options` | 複数案 + メリデメ + 推奨を提示 | 設計判断 / ライブラリ選定が複数ありえる場面 |
+| `dialogue-principles` | 対話の進め方 (共創 / 健全コンフリクト / 段階的開示) | 議論・対話全般 |
+| `git-workflow` | worktree / branch 運用・完了時の main 統合・push 規律 | コード変更 / セッション開始 / Git 操作 |
+| `implementation` | コード規約の探索型入口 (領域別スキルを発見して従う) | 実装フェーズでコードを書く / 構造を決める |
+| `e2e` | E2E 流儀の探索型入口 (領域別スキルを発見して従う) | E2E spec を書く / 編集する |
+| `e2e-execution` | E2E 実行手順の探索型入口 (実行手順ドキュメントを発見して従う) | E2E を動かす / 環境構築 |
 
-> `implementation` / `e2e` / `e2e-execution` は **薄いデフォルト**として配信され、触る範囲に対応するプロジェクトの規約・流儀・実行手順を探して従う探索型の入口になっている。プロジェクト固有の規約を持っている場合、領域別のスキル (例: front 用 / api 用) を登録すればこれらの既定が触る範囲に応じて振り分けるほか、同名で置き換えることもできる (置き換え方は下記 [Skill management](#skill-management) を参照)。`slice-tdd` が実装フェーズでこれらを参照し、`code-reviewer` は `implementation` を preload するので、規約が実装とレビューの両方に効く。
+### 配信される subagent
 
-### 配信される subagent (`.apm/agents/`)
-
-| subagent | 役割 | preload skill |
-|---|---|---|
-| `pre-implementation-reviewer` | 要件 + 基本設計の第三者レビュー | なし |
-| `code-reviewer` | コード変更のペアプロレビュー | `slice-tdd` + `implementation` |
-| `e2e-reviewer` | E2E spec のペアプロレビュー | `e2e` + `slice-tdd` |
-| `done-verifier` | 完了宣言の証拠検証 (Done 達成の実行確認) | なし |
-
-### 配信される instruction (`.apm/instructions/`)
-
-- `main.instructions.md`: xp-harness の core 運用ルール (XP discipline / phase-driven skill / pair-programming subagent / 横断ルール / 対話の型 / 実装中のルール)。`apm install` で `.claude/rules/main.md` に deploy され、Claude Code が起動時に読む
-
-### 配信されない (改修者用、`.claude/skills/` / `.claude/agents/`)
-
-harness 改修者が git clone してきた状態で Claude Code が認識する (APM 管理外、配信されない):
-
-- `philosophy`: harness を改修するときの判断軸 (価値で導きつつ規律装置最小注入 / ペアプロ哲学 / 中央集権より decentralized / outside-in 例外なし / 対話と自走の境界 / INVEST の取捨 / 共創を目指す対話)
-- `skill-design-style`: skill / agent を新規作成・改修するときの設計の流儀 (構造 / 境界原則 / description の書き方 / 改修フロー)
-- `release`: version を上げて GitHub Release を作る手順
-- `harness-verification`: skill / subagent の改修が実際に効いているか (発火・振る舞い) を sandbox 実走と transcript 解析で事実確認する手順
-- `review-recording`: harness 本体のレビュー中に依頼者の気づきを ROADMAP 等へ記録していく振る舞い
-- `skill-reviewer` (subagent, `.claude/agents/`): skill / agent 改修の最終レビュー・設計中の壁打ち相手
-
-## Skill management
-
-consumer 側で skill を増やす 2 通り:
-
-### 1. APM 管轄外 (既存運用との共存)
-```
-project-root/
-└── .claude/skills/<your-skill>/SKILL.md   # 直接書く
-```
-- `apm install` で touch されない、`apm.lock.yaml` にも track されない
-- 既存の `.claude/skills/` 運用を続けたい consumer 向け
-
-### 2. APM 管轄内 (APM 流儀で管理)
-```
-project-root/
-└── .apm/skills/<your-skill>/SKILL.md      # APM 配下に書く
-```
-- `apm install` で `.claude/skills/<your-skill>/` に deploy される
-- `apm.lock.yaml` に track される (再現性 / バージョン管理)
-
-### harness のカスタマイズ
-
-skill の種類によってカスタマイズの方法が異なる。
-
-**git-workflow など動作規律スキル — project 固有ルールを instruction に書く**
-
-branch 戦略・統合ルール・commit 規約など project 固有の Git 運用ルールは `.apm/instructions/<project>.md` に書く (`apm install` で `.claude/rules/<project>.md` に deploy される)。skill は project の instruction を読んで動作を調整するので、skill 自体を置き換える必要はない。
-
-**implementation / e2e / e2e-execution など規約探索型スキル — project 固有スキルを追加する**
-
-これらの skill は「プロジェクトの規約・流儀を探して従う」入口の役割を持つ。実際の規約は project 側のスキル (例: `api-implementation`, `e2e-playwright-front`) に書く。project 側スキルを `.apm/skills/` に追加すると、base skill がそれを発見して呼び出す。base skill 自体を置き換える必要はない。
-
-**harness の skill を丸ごと切り替えたい場合 — 同名で全体置換**
-
-harness と同名の skill を `.apm/skills/<harness-skill>/` に置くと **「last-installed-wins」** で全体置換される (warning 表示)。**ファイル全体置換**、partial / section 単位の override は不可。harness の更新への追従は自己管理になる。
+| subagent | 役割 |
+|---|---|
+| `pre-implementation-reviewer` | 要件 + 基本設計の第三者レビュー |
+| `code-reviewer` | コード変更のペアプロレビュー (`implementation` preload) |
+| `e2e-reviewer` | E2E spec のペアプロレビュー (`e2e` + `slice-tdd` preload) |
+| `done-verifier` | 完了宣言の証拠検証 (Done 達成の実行確認) |
 
 ## Update
 
@@ -147,7 +105,7 @@ harness と同名の skill を `.apm/skills/<harness-skill>/` に置くと **「
 apm outdated
 ```
 
-タグを跨いだ更新 (例: v0.4.0 → v0.5.0) は **`apm.yml` を手で書き換える** 必要がある。`apm install --update` / `apm deps update <pkg>` / `apm install <pkg>#vX.Y.Z --force` のいずれも `apm.yml` の `#vX.Y.Z` pin を書き換えない (= APM 0.12.x 時点の仕様。これらは「`apm.yml` の ref 制約 *内* での latest 追従」しかしない)。
+タグを跨いだ更新 (例: v0.4.0 → v0.5.0) は **`apm.yml` を手で書き換える** 必要がある。`apm install --update` / `apm deps update <pkg>` / `apm install <pkg>#vX.Y.Z --force` のいずれも `apm.yml` の `#vX.Y.Z` pin を書き換えない (= APM 0.12.x 時点の仕様)。
 
 ```bash
 # 1. apm.yml の dependencies.apm の該当行を編集
@@ -158,17 +116,15 @@ apm outdated
 apm install --target claude
 ```
 
-このとき `Content hash mismatch ... This may indicate a supply-chain attack.` が出る場合がある (lockfile に旧バージョンの hash が残っているため)。 これは APM のサプライチェーン攻撃検出機構が正しく働いている挙動。 手元で `apm.yml` を書き換えたのが原因と分かっていれば、 メッセージ通り `--update` を付けて再実行:
+`Content hash mismatch` が出る場合は lockfile に旧バージョンの hash が残っているため。`--update` を付けて再実行:
 
 ```bash
 apm install --update --target claude
 ```
 
-`apm install` が更新分を `.claude/` 配下に再 deploy するので、これで完了 (`apm compile` は不要)。
-
 ### skill 削除があった version の対応
 
-APM はディレクトリ自動削除を拒否する (`Refused to remove directory entry`)。harness の version で skill が削除された場合、consumer は **手動で削除する必要がある**:
+APM はディレクトリ自動削除を拒否する。harness の version で skill が削除された場合は手動で削除する:
 
 ```bash
 rm -rf .claude/skills/<deprecated-skill-name>/
@@ -176,35 +132,37 @@ rm -rf .claude/skills/<deprecated-skill-name>/
 
 削除すべき skill は [GitHub Releases](../../releases) の各 version の release notes に明示される。
 
+## 対象と制約
+
+- **対応エージェント**: Claude Code のみ。cross-agent 対応 (Cursor / Copilot 等) は将来 TODO ([ROADMAP](./ROADMAP.md) #3)
+- **想定利用者**: 依頼者本人・同チームメンバーの cross-account portability とチーム共有を主目的とした個人 OSS。外部利用は自由だが SLA なし・サポート対象外。issue / PR は歓迎、対応は任意
+- **成熟度**: work in progress。breaking change は release notes に記載する
+
+## 内部構造 (改修者向け)
+
+```
+xp-harness/
+├── .apm/                                # ★ APM 配信対象 (apm install で届く)
+│   ├── skills/<...>/SKILL.md
+│   ├── agents/<...>.md
+│   └── instructions/main.instructions.md
+│
+└── .claude/                             # ★ APM 管理外、harness 改修者用
+    ├── skills/                          # philosophy / skill-design-style / harness-verification 等
+    └── agents/skill-reviewer.md
+```
+
 ## Development setup
 
-harness を改修するための前提:
-
-- **公式 skill-creator skill** (Anthropic 提供) が consumer の `~/.claude/skills/` 等に install 済であること
-- xp-harness の philosophy skill (`.claude/skills/philosophy/`) と公式 skill-creator が並行発火する流れで skill を改修する
-- xp-harness を改修したい場合は git clone する (APM の `apm install` 経由ではなく、改修対象の repo を直接編集する)
-
-### harness 改修者の作業フロー
+harness を改修するには git clone して直接編集する (`apm install` 経由ではない):
 
 ```bash
 cd /path/to/xp-harness
-bash scripts/setup-dev.sh             # 初回 / skill 追加時に叩く (冪等)
-claude                                # philosophy + .apm/ 配下の skill / agent / main instruction が認識される
-# .apm/ 配下を編集 (skill / agent / instruction)
-# 改修した skill / agent は Claude Code 再起動 (or /skills) で即時反映
+bash scripts/setup-dev.sh   # 初回 / skill 追加時 (冪等)
+claude                      # philosophy + .apm/ 配下が認識される
 ```
 
-`scripts/setup-dev.sh` が `.apm/skills/<x>` → `.claude/skills/<x>` / `.apm/agents/<x>.md` → `.claude/agents/<x>.md` の symlink を作る。`.apm/instructions/main.instructions.md` は CLAUDE.md からの `@` transclusion で取り込まれる。philosophy skill (`.claude/skills/philosophy/`) は APM 管理外で git tracked、symlink 対象外。
-
-正式な self-host (`apm install . --target claude`) は **APM の循環依存検出により実現不可** ([ROADMAP](./ROADMAP.md) #1)。上記の symlink 方式は Stage 0 の dogfooding 用 暫定対応。
-
-## Roadmap / TODO
-
-将来 TODO は [ROADMAP.md](./ROADMAP.md) を参照。優先度上位:
-
-- self-host (dogfooding) の実現
-- `.apm/instructions/main.md` の section 分割精査
-- cross-agent 対応 (Cursor 等への移植)
+改修した skill / agent は Claude Code 再起動 (or `/skills`) で即時反映。
 
 ## License
 
