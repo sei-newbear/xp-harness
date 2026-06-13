@@ -138,31 +138,9 @@ rm -rf .claude/skills/<deprecated-skill-name>/
 - **想定利用者**: 依頼者本人・同チームメンバーの cross-account portability とチーム共有を主目的とした個人 OSS。外部利用は自由だが SLA なし・サポート対象外。issue / PR は歓迎、対応は任意
 - **成熟度**: work in progress。breaking change は release notes に記載する
 
-## 内部構造 (改修者向け)
+## 改修・コントリビューション
 
-```
-xp-harness/
-├── .apm/                                # ★ APM 配信対象 (apm install で届く)
-│   ├── skills/<...>/SKILL.md
-│   ├── agents/<...>.md
-│   └── instructions/main.instructions.md
-│
-└── .claude/                             # ★ APM 管理外、harness 改修者用
-    ├── skills/                          # philosophy / skill-design-style / harness-verification 等
-    └── agents/skill-reviewer.md
-```
-
-## Development setup
-
-harness を改修するには git clone して直接編集する (`apm install` 経由ではない):
-
-```bash
-cd /path/to/xp-harness
-bash scripts/setup-dev.sh   # 初回 / skill 追加時 (冪等)
-claude                      # philosophy + .apm/ 配下が認識される
-```
-
-改修した skill / agent は Claude Code 再起動 (or `/skills`) で即時反映。
+harness 本体 (skill / agent / instruction) を改修したい場合は [CONTRIBUTING.md](./CONTRIBUTING.md) を参照。
 
 ## License
 
