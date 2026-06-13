@@ -124,11 +124,21 @@ project-root/
 - `apm install` で `.claude/skills/<your-skill>/` に deploy される
 - `apm.lock.yaml` に track される (再現性 / バージョン管理)
 
-### 同名衝突時の挙動
+### harness のカスタマイズ
 
-consumer の `.apm/skills/<harness-skill>/` に harness と同名 skill を置くと **「last-installed-wins」** で override される (warning 表示)。**ファイル全体置換**、partial / section 単位の override は不可。
+skill の種類によってカスタマイズの方法が異なる。
 
-同名 skill を丸ごと置き換えず、動作の一部だけ変えたい場合は、別 skill 名で新規作成するか、`.apm/instructions/<custom>.md` で追加ルールを書く (`apm install` で `.claude/rules/<custom>.md` に deploy される)。どちらのアプローチが適切かは skill の種類と用途によって異なる。
+**git-workflow など動作規律スキル — project 固有ルールを instruction に書く**
+
+branch 戦略・統合ルール・commit 規約など project 固有の Git 運用ルールは `.apm/instructions/<project>.md` に書く (`apm install` で `.claude/rules/<project>.md` に deploy される)。skill は project の instruction を読んで動作を調整するので、skill 自体を置き換える必要はない。
+
+**implementation / e2e / e2e-execution など規約探索型スキル — project 固有スキルを追加する**
+
+これらの skill は「プロジェクトの規約・流儀を探して従う」入口の役割を持つ。実際の規約は project 側のスキル (例: `api-implementation`, `e2e-playwright-front`) に書く。project 側スキルを `.apm/skills/` に追加すると、base skill がそれを発見して呼び出す。base skill 自体を置き換える必要はない。
+
+**harness の skill を丸ごと切り替えたい場合 — 同名で全体置換**
+
+harness と同名の skill を `.apm/skills/<harness-skill>/` に置くと **「last-installed-wins」** で全体置換される (warning 表示)。**ファイル全体置換**、partial / section 単位の override は不可。harness の更新への追従は自己管理になる。
 
 ## Update
 
