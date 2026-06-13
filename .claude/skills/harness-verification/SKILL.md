@@ -66,6 +66,7 @@ skill / subagent を改修しても、それが実際に発火するか・意図
 1. `scripts/claude-launcher.sh launch <name> <sandbox パス>` — 起動
 2. `scripts/claude-launcher.sh log <name>` で `Remote Control active` を確認。**出なければ起動失敗** → `stop` して仕切り直す (起動の stdout は捨てているのでサイレントに失敗しうる。ここを skip しない)
 3. `scripts/claude-launcher.sh send <name> "<検証プロンプト>"` — プロンプト送信。**送信後、`log` で処理が始まったことを確認してから次を送る**(FIFO 送信は稀に submit されず未送信のまま残る。未送信のまま次を送ると入力が混線し、別物を検証してしまう)
+   - **注意 (v2.1.177 以降で確認)**: 起動直後に welcome dialog / 新機能通知が表示される場合、この dialog が残っていると `send` したプロンプトが input box に入るが submit されない。`rc active` 確認後に `printf '\r' > <name>.pipe` を 1〜2 回送って dialog を閉じてから `send` すること
 4. **transcript (jsonl) の更新が止まったらターン完了** → 手順 4 で解析 (更新が続く間は途中。途中の transcript を解析して誤判定しない)
 5. `scripts/claude-launcher.sh stop <name>` — 停止 + 片付け(実際に終了してから返るので、呼び出し後に手で再確認しない)
 
