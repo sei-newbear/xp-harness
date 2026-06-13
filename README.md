@@ -128,9 +128,7 @@ project-root/
 
 consumer の `.apm/skills/<harness-skill>/` に harness と同名 skill を置くと **「last-installed-wins」** で override される (warning 表示)。**ファイル全体置換**、partial / section 単位の override は不可。
 
-consumer が部分的にカスタマイズしたい場合は、別 skill 名で新規作成するか、`.apm/instructions/<custom>.md` で追加ルールを書く (`apm install` で `.claude/rules/<custom>.md` に deploy される)。
-
-skill のファイル全体置換は harness の更新への追従負担が増えるため、部分カスタマイズ (別 skill 名 / 追加 instruction) で足りる範囲ではそちらを推奨する。
+同名 skill を丸ごと置き換えず、動作の一部だけ変えたい場合は、別 skill 名で新規作成するか、`.apm/instructions/<custom>.md` で追加ルールを書く (`apm install` で `.claude/rules/<custom>.md` に deploy される)。どちらのアプローチが適切かは skill の種類と用途によって異なる。
 
 ## Update
 
