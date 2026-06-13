@@ -35,17 +35,19 @@ install 直後はデフォルトの動作で動く。プロジェクト固有の
 
 ### Git 運用ルールを変えたい
 
-`git-workflow` はデフォルトで worktree 運用・高頻度 commit・main への直接統合で動く。PR 必須運用・trunk-based 開発など、チーム固有のルールがある場合は `.apm/instructions/` に書く:
+`git-workflow` はデフォルトで worktree 運用・高頻度 commit・main への直接統合で動く。PR 必須運用・trunk-based 開発など、チーム固有のルールがある場合は `.apm/instructions/` 配下にファイルを作って書く。`apm install` で `.claude/rules/` に deploy され、Claude Code が起動時に読む。
 
 ```
-.apm/instructions/git-rules.md
+.apm/instructions/git-rules.md  ← 自由な名前でよい
 ```
+
+中身の例:
 
 ```
 PR 必須。main への直 push 禁止。branch のまま push して PR を作る。
 ```
 
-`apm install` で `.claude/rules/git-rules.md` に deploy され、`git-workflow` が読んで動作を調整する。
+`git-workflow` は Claude Code のコンテキストに入ったこのルールを読んで動作を調整する。
 
 ### コード規約・アーキテクチャ方針を入れたい
 
