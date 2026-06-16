@@ -147,7 +147,7 @@ rm -rf .claude/skills/<deprecated-skill-name>/
 
 ## 対象と制約
 
-- **対応エージェント**: Claude Code のみ。cross-agent 対応 (Cursor / Copilot 等) は将来 TODO ([ROADMAP](./ROADMAP.md) #3)
+- **対応エージェント**: Claude Code のみ。cross-agent 対応 (Cursor / Copilot 等) は将来 TODO ([kanban](./kanban/) backlog の cross-agent 対応)
 - **想定利用者**: 依頼者本人・同チームメンバーの cross-account portability とチーム共有を主目的とした個人 OSS。外部利用は自由だが SLA なし・サポート対象外。issue / PR は歓迎、対応は任意
 - **成熟度**: work in progress。breaking change は release notes に記載する
 

@@ -1,0 +1,3 @@
+# 実装 skill と E2E 実行 skill 新設
+
+完了 (2026-05-31、PR #5 MERGED)。branch `feat/impl-e2e-exec-skills`。要件定義 / 基本設計は `docs/working/実装スキル-e2e実行スキル新設/`。`implementation` / `e2e-execution` skill を新設、slice-tdd が各 TDD ステップで両者を**呼ぶ** (per-step: E2E 段で e2e-execution / Green 段で implementation。冒頭まとめだと後の段で忘れられると判明したため per-step に修正)、code-reviewer に implementation を preload + Skill tool、e2e-reviewer に Skill tool (reviewer の Skill 動的発見機構追加も消化)、README に登録。slice-tdd 経由の暫定参照 TODO は欠番化。検証: consumer 検証 repo で headless 実行し、main が各段で implementation/e2e-execution/architecture を Skill 発火 + 初版から命名規約を満たす + subagent の Skill 自律発火を確認。補助ファイル付き skill での発火は未検証。
