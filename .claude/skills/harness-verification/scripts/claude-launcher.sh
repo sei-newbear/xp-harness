@@ -37,7 +37,10 @@ cmd_launch() {
   setsid bash -c "exec sleep infinity > '$fifo'" >/dev/null 2>&1 &
   local hpid=$!
   # pty を与えて claude を detached 起動。stdin は FIFO、画面は log に記録
-  setsid bash -c "cd '$dir' && exec script -qfc 'claude --remote-control $name --permission-mode auto' '$log' < '$fifo'" >/dev/null 2>&1 &
+  # env -u で親の session 変数 2 つを外す: 引き継ぐと子 claude が「親セッションの子」と判定され
+  # standalone セッション扱いされず JSONL transcript が書かれない (= analyze-session.py が解析できない)。
+  # env が claude を exec する形にする (env の後に shell ビルトイン exec を置くと env から見えず即死するため)。
+  setsid bash -c "cd '$dir' && exec script -qfc 'env -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID claude --remote-control $name --permission-mode auto' '$log' < '$fifo'" >/dev/null 2>&1 &
   local spid=$!
   echo "$hpid $spid" > "$pidf"
   echo "launched '$name' (dir=$dir)"
