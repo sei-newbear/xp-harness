@@ -39,8 +39,9 @@ skill / subagent を改修しても、それが実際に発火するか・意図
 **sandbox の用意** — 新規に作るなら:
 
 ```bash
-.claude/skills/harness-verification/scripts/setup-sandbox.sh <名前>          # 既定: front/api 分離の Web アプリ構成
-.claude/skills/harness-verification/scripts/setup-sandbox.sh <名前> --bare   # 最小構成 (git repo + apm install のみ)
+.claude/skills/harness-verification/scripts/setup-sandbox.sh <名前>            # 既定: front/api 分離の Web アプリ構成
+.claude/skills/harness-verification/scripts/setup-sandbox.sh <名前> --bare     # 最小構成 (git repo + apm install のみ)
+.claude/skills/harness-verification/scripts/setup-sandbox.sh <名前> --wiremock # 外部 API モック構成 (api + WireMock(Docker))
 ```
 
 `<xp-harness の親ディレクトリ>/xp-harness-test/<名前>/` に git repo + apm install 済の sandbox ができる (改修中の xp-harness をローカル依存で deploy)。既存 sandbox の使い回しでよいかは改修者と判断する。**改修内容を sandbox に反映するには、改修を commit してから sandbox で `apm install` し直す** (apm はローカル依存でも git の内容を見る)。
@@ -54,6 +55,8 @@ skill / subagent を改修しても、それが実際に発火するか・意図
 同梱スキルは配布物ではなく、consumer プロジェクトが持つ固有スキルの形を模した検証材料 (配布側の e2e skill と sync させる対象ではない)。「検証材料である」という注記を template 側の SKILL.md に書かないのは意図的 (= 上の「ノーヒント」原則の具体適用) — sandbox に複製されて検証セッション自身が読むため、観測を汚す。同梱スキルが探索型スキルに実際に探し当てられるかは検証ランで観測して確定する (同形の構成で探索発火・混線ゼロの実績あり)。
 
 プローブによる連鎖発火確認などアプリが不要な検証は `--bare` で安く作る。
+
+`--wiremock` は「外部 API をモックする E2E でモック検証が十分か」を確認する検証クラス用。api (Hono) + WireMock(Docker) 構成で、**検証材料**として「リクエストマッチが緩い既存テスト」「モックは仕様書の全パラメータを検証する規約スキル `e2e-api-wiremock`」「外部 API 仕様書」を同梱する (= セッションが『既存テストの検証が甘い』と自分で気づけるかを見る材料)。`docs/working/` にはサンプルの要件 / 設計を同梱するが、これは**筋書きの一例**。実際の検証では、検証したい対象に合わせて筋書き (タスク・要件 / 設計) を差し替え、上の「検証条件の設計原則」(ノーヒント・実観測ケース) で点検してから走らせる。
 
 **途中状態の仕込み** — 目的に応じて選ぶ:
 

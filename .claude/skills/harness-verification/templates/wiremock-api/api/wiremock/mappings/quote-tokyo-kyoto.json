@@ -1,0 +1,15 @@
+{
+  "request": {
+    "method": "POST",
+    "urlPath": "/v1/quote",
+    "bodyPatterns": [
+      { "matchesJsonPath": "$[?(@.origin == '100-0001')]" },
+      { "matchesJsonPath": "$[?(@.destination == '600-8216')]" }
+    ]
+  },
+  "response": {
+    "status": 200,
+    "headers": { "Content-Type": "application/json" },
+    "jsonBody": { "fee": 1200, "currency": "JPY" }
+  }
+}
