@@ -11,14 +11,18 @@ apm.lock.yaml
 # - harness-verification: harness 検証手順 skill (改修者向け)
 # - kanban: 改修バックログかんばん skill (改修者向け)
 # - skill-reviewer: skill レビュー subagent (改修者向け)
+# - disclosure-guard: 公開前の固有名詞混入ガード skill (改修者向け)
+# - disclosure-auditor: 固有名詞混入 監査 subagent (改修者向け)
 .claude/skills/*
 !.claude/skills/philosophy/
 !.claude/skills/release/
 !.claude/skills/skill-design-style/
 !.claude/skills/harness-verification/
 !.claude/skills/kanban/
+!.claude/skills/disclosure-guard/
 .claude/agents/*
 !.claude/agents/skill-reviewer.md
+!.claude/agents/disclosure-auditor.md
 
 # Local config / env / secrets
 .env
