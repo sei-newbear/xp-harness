@@ -12,20 +12,20 @@
       {
         "matcher": "startup",
         "hooks": [
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.apm/hooks/scripts/git-freshness.sh", "timeout": 15 }
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/hooks/scripts/git-freshness.sh", "timeout": 15 }
         ]
       },
       {
         "matcher": "resume",
         "hooks": [
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.apm/hooks/scripts/git-freshness.sh", "timeout": 15 }
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/hooks/scripts/git-freshness.sh", "timeout": 15 }
         ]
       }
     ],
     "UserPromptSubmit": [
       {
         "hooks": [
-          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/.apm/hooks/scripts/git-freshness.sh", "timeout": 15 }
+          { "type": "command", "command": "$CLAUDE_PROJECT_DIR/hooks/scripts/git-freshness.sh", "timeout": 15 }
         ]
       }
     ]
