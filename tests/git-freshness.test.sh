@@ -5,7 +5,7 @@
 set -uo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-HOOK="$ROOT/hooks/scripts/git-freshness.sh"
+HOOK="$ROOT/.apm/hooks/scripts/git-freshness.sh"
 THRESHOLD_SECONDS=$((24 * 60 * 60))
 
 pass=0
