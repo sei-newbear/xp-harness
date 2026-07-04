@@ -86,6 +86,7 @@ setup
 advance_remote 2
 out="$(run_hook)"
 assert_contains "$out" "2" "未取り込み 2 を伝える"
+assert_contains "$out" "git-workflow" "作業前に git-workflow の同期手順へ誘導する"
 teardown
 
 echo "test: 常に exit 0 (ブロックしない)"
@@ -100,7 +101,7 @@ git -C "$WORK" fetch -q origin                              # 本物の FETCH_HE
 age_fetch_head                                              # 古く偽装
 git -C "$WORK" remote set-url origin /nonexistent-remote-xyz # 到達不可に
 out="$(run_hook)"
-assert_contains "$out" "fetch" "フォールバックで fetch を案内"
+assert_contains "$out" "最新化" "フォールバックで最新化を案内"
 assert_eq "$(run_hook_exit)" "0" "フォールバック経路でも exit 0"
 teardown
 
