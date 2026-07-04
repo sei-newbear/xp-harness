@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}/hooks/scripts/git-freshness.sh",
+            "command": "${PLUGIN_ROOT}/.apm/hooks/scripts/git-freshness.sh",
             "timeout": 15
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}/hooks/scripts/git-freshness.sh",
+            "command": "${PLUGIN_ROOT}/.apm/hooks/scripts/git-freshness.sh",
             "timeout": 15
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}/hooks/scripts/git-freshness.sh",
+            "command": "${PLUGIN_ROOT}/.apm/hooks/scripts/git-freshness.sh",
             "timeout": 15
           }
         ]
