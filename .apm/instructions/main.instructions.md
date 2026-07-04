@@ -111,7 +111,7 @@ E2E テストの流儀は `.claude/skills/e2e/SKILL.md` を参照。`slice-tdd` 
 実装フェーズは自走モードなので、main session が裁量で処理する（user は別業務、毎回呼ばない）:
 
 - **Security**: **例外なく対応**。「社内向けだから」「今回は大丈夫」という理由での非対応は禁止
-- **Critical**: 原則対応。「ゴール的に無視できる」と理由を立てれば非対応 OK、その場合は理由をコミット message か TaskCreate コメントに残す
+- **Critical**: 原則対応。「ゴール的に無視できる」と理由を立てれば非対応 OK、その場合は理由を commit message に残す（コード内コメントには残さない）
 - **Warning**: main session の裁量判断
 - **Suggestion**: 任意
 
