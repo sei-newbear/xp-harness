@@ -102,7 +102,7 @@ if run_fetch; then
   ref="$(base_ref)"
   behind="$(git rev-list --count "HEAD..$ref" 2>/dev/null || echo 0)"
   if [ "${behind:-0}" -gt 0 ]; then
-    echo "[git 最新化] ${ref} が ${behind} コミット進んでいます (未取り込み)。古いまま作業 (調査・実装いずれも) を進めると、誤った前提の上に成果が積まれ無駄なコンフリクトや手戻りを生みます。依頼に入る前に、まず git-workflow skill の同期手順に従って取り込んでください (手元の変更の有無で安全な手順が変わるため、自己流の pull でなく git-workflow に従う)。"
+    echo "[git 最新化] ${ref} が ${behind} コミット進んでいます (未取り込み)。古い状態のコード・ドキュメントを読んで判断すると、最新でない内容を前提にして誤った結論を出します (実装すれば無駄なコンフリクト・手戻りにもなります)。調査・回答・実装のいずれであれ、取り掛かる前に git-workflow skill の同期手順に従って最新を取り込んでください。"
   fi
   exit 0
 fi
