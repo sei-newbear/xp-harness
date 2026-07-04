@@ -102,7 +102,7 @@ if run_fetch; then
   ref="$(base_ref)"
   behind="$(git rev-list --count "HEAD..$ref" 2>/dev/null || echo 0)"
   if [ "${behind:-0}" -gt 0 ]; then
-    echo "git 最新化のお知らせ: ${ref} が ${behind} コミット進んでいます (未取り込み)。取り込みを検討してください。"
+    echo "[git 最新化] ${ref} が ${behind} コミット進んでいます (未取り込み)。古いまま作業 (調査・実装いずれも) を進めると、誤った前提の上に成果が積まれ無駄なコンフリクトや手戻りを生みます。依頼に入る前に、まず git-workflow skill の同期手順に従って取り込んでください (手元の変更の有無で安全な手順が変わるため、自己流の pull でなく git-workflow に従う)。"
   fi
   exit 0
 fi
@@ -111,6 +111,6 @@ fi
 # 一度も fetch していない (FETCH_HEAD 不在) なら「経過時間」を騙れないので静かに抜ける (設計 §4)。
 if [ "$had_fetch_head" -eq 1 ] && [ "$age" -gt "$THRESHOLD_SECONDS" ]; then
   hours=$(( age / 3600 ))
-  echo "git 最新化のお知らせ: 前回の同期から約 ${hours} 時間経過しています。git fetch で最新化してください。"
+  echo "[git 最新化] 前回の同期から約 ${hours} 時間経過しています。依頼に入る前に、git-workflow skill の同期手順に従って最新化してください。"
 fi
 exit 0
