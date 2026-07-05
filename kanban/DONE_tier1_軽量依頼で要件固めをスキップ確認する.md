@@ -15,3 +15,6 @@
 
 ## 再開時の起点
 `define-requirements` の発火条件（description）と「発火しない 3 条件」を読み直し、軽量依頼で確認に倒す動線をどこに置くか（description か本文か）を propose-options で複数案化するところから。
+
+## 完了
+`define-requirements` 本文最上段に「深掘る / そのまま進める」ゲートを追加（description は据え置きで広く発火→安全網を保つ）。見立てを述べ `AskUserQuestion` で確認、迷ったら深掘る側。PR #14 でマージ（main `e2ecbee`）。harness-verification で発火・見立て・2択確認・推奨配置を実走確認済み。
