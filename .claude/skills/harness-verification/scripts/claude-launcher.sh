@@ -133,7 +133,8 @@ cmd_stop() {
     for p in $(cat "$pidf"); do kill -- "-$p" 2>/dev/null || true; done
   fi
   # 終了をタイムアウト付きで監視し、残れば SIGKILL。stop は実際に消えてから返す。
-  alive_pids() { ps -eo pid,comm,args | awk -v n="$name" '$2=="claude" && $0 ~ ("remote-control " n "([[:space:]]|$)") {print $1}'; }
+  # claude 本体だけでなく、それを包む script プロセスも対象にする (comm 条件を付けると script を見逃す)
+  alive_pids() { ps -eo pid,args | awk -v n="$name" '$0 ~ ("remote-control " n "([[:space:]]|$)") {print $1}'; }
   local i
   for i in $(seq 1 20); do [ -z "$(alive_pids)" ] && break; sleep 0.5; done
   local left; left="$(alive_pids)"
