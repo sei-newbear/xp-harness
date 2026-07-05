@@ -16,14 +16,29 @@ usage() {
   cat <<USAGE
 Usage:
   claude-launcher.sh launch <name> [dir]   起動 (dir 既定=\$PWD): claude --remote-control <name> を pty+FIFO で
-  claude-launcher.sh send   <name> <text>  起動中セッションにプロンプト送信 (Enter 付き)
+  claude-launcher.sh send   <name> <text>  プロンプト送信 (dialog 閉じ + クリア + Enter で submit 保証)
+  claude-launcher.sh wait-idle <name> [quiet] [timeout]
+                                           transcript(jsonl) の mtime が quiet 秒(既定6)更新されなければ IDLE。
+                                           送信直後に呼ぶと処理開始を待ってから停止判定する。timeout 既定300s
   claude-launcher.sh log    <name>         セッションの画面ログ (制御コード除去) を表示
   claude-launcher.sh list                  起動中セッション一覧
   claude-launcher.sh stop   <name>         セッション停止 + 後片付け (消えてから返る = 呼び出し後の再確認は不要)
+
+注意:
+  - 画面ログ(log) は端末の生ダンプで、過去の "Pollinating…" 等が残骸として残る。
+    アイドル判定を log の grep でやると誤検知するので、待機は必ず wait-idle (transcript mtime) を使う。
+  - send しても submit されず入力欄に残ることがある (通知 dialog が Enter を食う)。
+    send は内部で dialog 閉じ→クリア→Enter を送るが、念のため送信後に log で処理開始を確認するとよい。
 USAGE
 }
 
 require() { command -v "$1" >/dev/null || { echo "ERROR: '$1' が必要" >&2; exit 1; }; }
+
+# sandbox dir から Claude Code の transcript ディレクトリを特定する (/ と . を - に置換)
+transcript_dir() {
+  local dir="$1"
+  printf '%s/.claude/projects/%s' "$HOME" "$(printf '%s' "$dir" | sed 's#[/.]#-#g')"
+}
 
 cmd_launch() {
   local name="$1" dir="${2:-$PWD}"
@@ -43,6 +58,8 @@ cmd_launch() {
   setsid bash -c "cd '$dir' && exec script -qfc 'env -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID claude --remote-control $name --permission-mode auto' '$log' < '$fifo'" >/dev/null 2>&1 &
   local spid=$!
   echo "$hpid $spid" > "$pidf"
+  # dir を絶対パスで保存: wait-idle が transcript ディレクトリを特定するのに使う
+  ( cd "$dir" && pwd ) > "$STATE/$name.dir"
   echo "launched '$name' (dir=$dir)"
   echo "  log : $log"
   echo "  起動まで数秒。'claude-launcher.sh log $name' で 'Remote Control active' を確認 → モバイルから接続可"
@@ -52,9 +69,31 @@ cmd_send() {
   local name="$1"; shift
   local fifo="$STATE/$name.pipe"
   [ -p "$fifo" ] || { echo "ERROR: '$name' は起動していない" >&2; exit 1; }
-  printf '\025' > "$fifo"          # 入力ボックスをクリア (Ctrl-U): 前の未送信プロンプトとの混線を防ぐ
+  printf '\r' > "$fifo"            # welcome / 通知 dialog が出ていたら閉じる (Enter を食われて未送信になるのを防ぐ)
+  printf '\025' > "$fifo"          # 入力ボックスをクリア (Ctrl-U): 前の未送信プロンプトや改行との混線を防ぐ
   printf '%s\r' "$*" > "$fifo"     # プロンプト + Enter
   echo "sent to '$name': $*"
+}
+
+cmd_wait_idle() {
+  local name="$1" quiet="${2:-6}" timeout="${3:-300}"
+  local dirf="$STATE/$name.dir"
+  [ -f "$dirf" ] || { echo "ERROR: '$name' の dir 記録なし (改修前に launch された可能性。再 launch するか $dirf に sandbox パスを書く)" >&2; exit 1; }
+  local tdir; tdir="$(transcript_dir "$(cat "$dirf")")"
+  _mtime() { local f; f="$(ls -t "$tdir"/*.jsonl 2>/dev/null | head -1)"; [ -n "$f" ] && stat -c %Y "$f" || echo 0; }
+  local start base; start=$(date +%s); base=$(_mtime)
+  # 処理開始 (mtime 更新) を待つ。最大 20s。始まらなければ停止判定へ移る (一瞬で終わった/既にアイドルのケース)
+  while [ $(( $(date +%s) - start )) -lt 20 ]; do
+    [ "$(_mtime)" -gt "$base" ] && break
+    sleep 1
+  done
+  # 停止 (quiet 秒 mtime 更新なし) を待つ
+  while :; do
+    local last now; last=$(_mtime); now=$(date +%s)
+    [ "$last" -ne 0 ] && [ $((now - last)) -ge "$quiet" ] && { echo "IDLE"; return 0; }
+    [ $((now - start)) -ge "$timeout" ] && { echo "TIMEOUT (${timeout}s)"; return 1; }
+    sleep 2
+  done
 }
 
 cmd_log() {
@@ -85,17 +124,18 @@ cmd_stop() {
   for i in $(seq 1 20); do [ -z "$(alive_pids)" ] && break; sleep 0.5; done
   local left; left="$(alive_pids)"
   [ -n "$left" ] && kill -9 $left 2>/dev/null || true
-  rm -f "$STATE/$name.pipe" "$STATE/$name.log" "$pidf"
+  rm -f "$STATE/$name.pipe" "$STATE/$name.log" "$pidf" "$STATE/$name.dir"
   echo "stopped & cleaned '$name'"
 }
 
 [ $# -ge 1 ] || { usage; exit 1; }
 sub="$1"; shift || true
 case "${sub:-}" in
-  launch) [ $# -ge 1 ] || { usage; exit 1; }; cmd_launch "$@";;
-  send)   [ $# -ge 2 ] || { usage; exit 1; }; cmd_send "$@";;
-  log)    [ $# -ge 1 ] || { usage; exit 1; }; cmd_log "$@";;
-  list)   cmd_list;;
-  stop)   [ $# -ge 1 ] || { usage; exit 1; }; cmd_stop "$@";;
+  launch)    [ $# -ge 1 ] || { usage; exit 1; }; cmd_launch "$@";;
+  send)      [ $# -ge 2 ] || { usage; exit 1; }; cmd_send "$@";;
+  wait-idle) [ $# -ge 1 ] || { usage; exit 1; }; cmd_wait_idle "$@";;
+  log)       [ $# -ge 1 ] || { usage; exit 1; }; cmd_log "$@";;
+  list)      cmd_list;;
+  stop)      [ $# -ge 1 ] || { usage; exit 1; }; cmd_stop "$@";;
   *) usage; exit 1;;
 esac
