@@ -20,8 +20,9 @@ Usage:
                                            session-id 指定で --resume 再開 (クラッシュ後の復帰に使う)
   claude-launcher.sh send   <name> <text>  プロンプト送信 (dialog 閉じ + クリア + Enter で submit 保証)
   claude-launcher.sh wait-idle <name> [quiet] [timeout]
-                                           transcript(jsonl) の mtime が quiet 秒(既定6)更新されなければ IDLE。
-                                           送信直後に呼ぶと処理開始を待ってから停止判定する。timeout 既定300s
+                                           main+subagent の transcript(jsonl) mtime が quiet 秒(既定8)更新
+                                           されなければ IDLE。処理が始まらなければ NOSTART (送信失敗の可能性)。
+                                           timeout 既定400s
   claude-launcher.sh log    <name>         セッションの画面ログ (制御コード除去) を表示
   claude-launcher.sh list                  起動中セッション一覧
   claude-launcher.sh stop   <name>         セッション停止 + 後片付け (消えてから返る = 呼び出し後の再確認は不要)
@@ -81,20 +82,28 @@ cmd_send() {
 }
 
 cmd_wait_idle() {
-  local name="$1" quiet="${2:-6}" timeout="${3:-300}"
+  local name="$1" quiet="${2:-8}" timeout="${3:-400}"
   local dirf="$STATE/$name.dir"
   [ -f "$dirf" ] || { echo "ERROR: '$name' の dir 記録なし (改修前に launch された可能性。再 launch するか $dirf に sandbox パスを書く)" >&2; exit 1; }
   local tdir; tdir="$(transcript_dir "$(cat "$dirf")")"
-  _mtime() { local f; f="$(ls -t "$tdir"/*.jsonl 2>/dev/null | head -1)"; [ -n "$f" ] && stat -c %Y "$f" || echo 0; }
-  local start base; start=$(date +%s); base=$(_mtime)
-  # 処理開始 (mtime 更新) を待つ。最大 20s。始まらなければ停止判定へ移る (一瞬で終わった/既にアイドルのケース)
-  while [ $(( $(date +%s) - start )) -lt 20 ]; do
-    [ "$(_mtime)" -gt "$base" ] && break
+  # main + subagent の全 jsonl の最新 mtime を見る。subagent 実行中は main transcript が止まるので、
+  # main だけ見ると subagent 点検中を誤ってアイドル判定してしまう (subagents/agent-*.jsonl も拾う)
+  _mtime() { find "$tdir" -name "*.jsonl" -printf '%T@\n' 2>/dev/null | sort -rn | head -1 | cut -d. -f1; }
+  local start base; start=$(date +%s); base="$(_mtime)"; base="${base:-0}"
+  # 処理開始 (mtime 更新) を待つ。始まらなければ send が submit されていない可能性 (通知が Enter を食う等)
+  local started=0 i
+  for ((i=0; i<15; i++)); do
+    local m; m="$(_mtime)"; m="${m:-0}"
+    [ "$m" -gt "$base" ] && { started=1; break; }
     sleep 1
   done
+  if [ "$started" = 0 ]; then
+    echo "NOSTART (15s 待っても transcript が更新されない。send が submit されていない可能性 → printf '\\r' で再送信してから wait-idle を)"
+    return 2
+  fi
   # 停止 (quiet 秒 mtime 更新なし) を待つ
   while :; do
-    local last now; last=$(_mtime); now=$(date +%s)
+    local last now; last="$(_mtime)"; last="${last:-0}"; now=$(date +%s)
     [ "$last" -ne 0 ] && [ $((now - last)) -ge "$quiet" ] && { echo "IDLE"; return 0; }
     [ $((now - start)) -ge "$timeout" ] && { echo "TIMEOUT (${timeout}s)"; return 1; }
     sleep 2
