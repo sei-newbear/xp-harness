@@ -15,7 +15,9 @@ mkdir -p "$STATE"
 usage() {
   cat <<USAGE
 Usage:
-  claude-launcher.sh launch <name> [dir]   起動 (dir 既定=\$PWD): claude --remote-control <name> を pty+FIFO で
+  claude-launcher.sh launch <name> [dir] [session-id]
+                                           起動 (dir 既定=\$PWD): claude --remote-control <name> を pty+FIFO で。
+                                           session-id 指定で --resume 再開 (クラッシュ後の復帰に使う)
   claude-launcher.sh send   <name> <text>  プロンプト送信 (dialog 閉じ + クリア + Enter で submit 保証)
   claude-launcher.sh wait-idle <name> [quiet] [timeout]
                                            transcript(jsonl) の mtime が quiet 秒(既定6)更新されなければ IDLE。
@@ -41,7 +43,7 @@ transcript_dir() {
 }
 
 cmd_launch() {
-  local name="$1" dir="${2:-$PWD}"
+  local name="$1" dir="${2:-$PWD}" session="${3:-}"
   require script; require claude; require setsid
   local fifo="$STATE/$name.pipe"
   local log="$STATE/$name.log"
@@ -55,7 +57,10 @@ cmd_launch() {
   # env -u で親の session 変数 2 つを外す: 引き継ぐと子 claude が「親セッションの子」と判定され
   # standalone セッション扱いされず JSONL transcript が書かれない (= analyze-session.py が解析できない)。
   # env が claude を exec する形にする (env の後に shell ビルトイン exec を置くと env から見えず即死するため)。
-  setsid bash -c "cd '$dir' && exec script -qfc 'env -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID claude --remote-control $name --permission-mode auto' '$log' < '$fifo'" >/dev/null 2>&1 &
+  # session-id が渡されたら --resume で再開 (クラッシュ後の復帰など)
+  local resume_opt=""
+  [ -n "$session" ] && resume_opt="--resume $session"
+  setsid bash -c "cd '$dir' && exec script -qfc 'env -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID claude $resume_opt --remote-control $name --permission-mode auto' '$log' < '$fifo'" >/dev/null 2>&1 &
   local spid=$!
   echo "$hpid $spid" > "$pidf"
   # dir を絶対パスで保存: wait-idle が transcript ディレクトリを特定するのに使う
