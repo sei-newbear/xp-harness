@@ -105,6 +105,7 @@ E2E テストの流儀は `.claude/skills/e2e/SKILL.md` を参照。`slice-tdd` 
 | `code-reviewer` | コード変更のレビュー | `slice-tdd` | Refactor 前に必ず呼ぶ + 手動 |
 | `e2e-reviewer` | E2E spec のレビュー | `e2e` + `slice-tdd` | E2E spec 書き終わった直後に必ず呼ぶ + 手動 |
 | `done-verifier` | 完了宣言の証拠検証 (Done 達成の実行確認) | なし | 完了系発話前 + 完了フロー (統合・push) 前 + 手動 |
+| `handoff-verifier` | 引き継ぎ成果物の文脈ゼロ点検 (自己完結性) | なし | `handoff-docs` skill 経由 (成果物を別セッションへ引き継ぐ前) + 手動 |
 
 ### コードレビュー (`code-reviewer` / `e2e-reviewer`) の指摘の処理ルール
 
