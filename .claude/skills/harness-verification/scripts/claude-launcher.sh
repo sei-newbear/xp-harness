@@ -19,29 +19,25 @@ Usage:
                                            起動 (dir 既定=\$PWD): claude --remote-control <name> を pty+FIFO で。
                                            session-id 指定で --resume 再開 (クラッシュ後の復帰に使う)
   claude-launcher.sh send   <name> <text>  プロンプト送信 (dialog 閉じ + クリア + Enter で submit 保証)
-  claude-launcher.sh wait-idle <name> [quiet] [timeout]
-                                           main+subagent の transcript(jsonl) mtime が quiet 秒(既定8)更新
-                                           されなければ IDLE。処理が始まらなければ NOSTART (送信失敗の可能性)。
-                                           timeout 既定400s
+  claude-launcher.sh wait-idle <name> [--timeout N]
+                                           pty 画面(log)の mtime が quiet 秒(固定4)更新されなければ IDLE
+                                           (処理中はスピナーが画面を書き続ける)。始まらなければ NOSTART。
+                                           --timeout はターンの重さに応じて呼ぶ側が指定(既定300s)。超過で
+                                           「まだ処理中 / 想定外停止」を切り分けた状態つき TIMEOUT を返す。
   claude-launcher.sh log    <name>         セッションの画面ログ (制御コード除去) を表示
   claude-launcher.sh list                  起動中セッション一覧
   claude-launcher.sh stop   <name>         セッション停止 + 後片付け (消えてから返る = 呼び出し後の再確認は不要)
 
 注意:
-  - 画面ログ(log) は端末の生ダンプで、過去の "Pollinating…" 等が残骸として残る。
-    アイドル判定を log の grep でやると誤検知するので、待機は必ず wait-idle (transcript mtime) を使う。
+  - アイドル判定は wait-idle が pty 画面(log)の mtime で行う。処理中はスピナーが毎フレーム画面を書く
+    (thinking / subagent 実行中も) ので mtime が動き、idle で止まる。log の中身は grep しない (残骸で誤検知)。
+    transcript の mtime も使わない (thinking 中は書かれず、長考を idle と誤判定する)。
   - send しても submit されず入力欄に残ることがある (通知 dialog が Enter を食う)。
     send は内部で dialog 閉じ→クリア→Enter を送るが、念のため送信後に log で処理開始を確認するとよい。
 USAGE
 }
 
 require() { command -v "$1" >/dev/null || { echo "ERROR: '$1' が必要" >&2; exit 1; }; }
-
-# sandbox dir から Claude Code の transcript ディレクトリを特定する (/ と . を - に置換)
-transcript_dir() {
-  local dir="$1"
-  printf '%s/.claude/projects/%s' "$HOME" "$(printf '%s' "$dir" | sed 's#[/.]#-#g')"
-}
 
 cmd_launch() {
   local name="$1" dir="${2:-$PWD}" session="${3:-}"
@@ -64,8 +60,6 @@ cmd_launch() {
   setsid bash -c "cd '$dir' && exec script -qfc 'env -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID claude $resume_opt --remote-control $name --permission-mode auto' '$log' < '$fifo'" >/dev/null 2>&1 &
   local spid=$!
   echo "$hpid $spid" > "$pidf"
-  # dir を絶対パスで保存: wait-idle が transcript ディレクトリを特定するのに使う
-  ( cd "$dir" && pwd ) > "$STATE/$name.dir"
   echo "launched '$name' (dir=$dir)"
   echo "  log : $log"
   echo "  起動まで数秒。'claude-launcher.sh log $name' で 'Remote Control active' を確認 → モバイルから接続可"
@@ -82,31 +76,51 @@ cmd_send() {
 }
 
 cmd_wait_idle() {
-  local name="$1" quiet="${2:-8}" timeout="${3:-400}"
-  local dirf="$STATE/$name.dir"
-  [ -f "$dirf" ] || { echo "ERROR: '$name' の dir 記録なし (改修前に launch された可能性。再 launch するか $dirf に sandbox パスを書く)" >&2; exit 1; }
-  local tdir; tdir="$(transcript_dir "$(cat "$dirf")")"
-  # main + subagent の全 jsonl の最新 mtime を見る。subagent 実行中は main transcript が止まるので、
-  # main だけ見ると subagent 点検中を誤ってアイドル判定してしまう (subagents/agent-*.jsonl も拾う)
-  _mtime() { find "$tdir" -name "*.jsonl" -printf '%T@\n' 2>/dev/null | sort -rn | head -1 | cut -d. -f1; }
-  local start base; start=$(date +%s); base="$(_mtime)"; base="${base:-0}"
-  # 処理開始 (mtime 更新) を待つ。始まらなければ send が submit されていない可能性 (通知が Enter を食う等)
+  local name="$1"; shift || true
+  # idle 判定閾 (quiet) は固定。処理中/idle を分けるのは「画面が animate しているか」で、
+  # これは Claude Code の描画性質でタスクに依らず一定なので固定でよい (実測: 作業中 staleness ≤2s)。
+  # timeout はターンの正当な総時間 (タスク依存) の網なので呼ぶ側が指定する。
+  local quiet=4 timeout=300
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --timeout) timeout="$2"; shift 2;;
+      --quiet)   quiet="$2";   shift 2;;   # 通常は渡さない (固定 4s)。work-pause が長い環境向けの escape hatch
+      *) echo "ERROR: 不明な引数 '$1' (--timeout N / --quiet N)" >&2; exit 1;;
+    esac
+  done
+  local log="$STATE/$name.log"
+  [ -f "$log" ] || { echo "ERROR: '$name' の log なし (起動していない?)" >&2; exit 1; }
+  # 信号は pty 画面 (log ファイル) の mtime。処理中はスピナーが毎フレーム画面を書くので mtime が
+  # 進み続け、idle (静的プロンプト) になると止まる。thinking 中も subagent 実行中も画面は生きる (実測済)。
+  # transcript の mtime は使わない (thinking 中は書かれず、長考を idle と誤判定するため)。
+  _lmtime() { stat -c %Y "$log" 2>/dev/null || echo 0; }
+  local start base; start=$(date +%s); base="$(_lmtime)"
+  # 処理開始 (画面更新) を待つ。始まらなければ send が submit されていない可能性 (通知が Enter を食う等)
   local started=0 i
   for ((i=0; i<15; i++)); do
-    local m; m="$(_mtime)"; m="${m:-0}"
-    [ "$m" -gt "$base" ] && { started=1; break; }
+    [ "$(_lmtime)" -gt "$base" ] && { started=1; break; }
     sleep 1
   done
   if [ "$started" = 0 ]; then
-    echo "NOSTART (15s 待っても transcript が更新されない。send が submit されていない可能性 → printf '\\r' で再送信してから wait-idle を)"
+    echo "NOSTART (15s 待っても画面が更新されない。send が submit されていない可能性 → printf '\\r' で再送信してから wait-idle を)"
     return 2
   fi
-  # 停止 (quiet 秒 mtime 更新なし) を待つ
+  # idle (画面が quiet 秒更新なし) を待つ。timeout 超過で「状態つき TIMEOUT」を返し、放置でなく呼ぶ側を引き戻す。
   while :; do
-    local last now; last="$(_mtime)"; last="${last:-0}"; now=$(date +%s)
-    [ "$last" -ne 0 ] && [ $((now - last)) -ge "$quiet" ] && { echo "IDLE"; return 0; }
-    [ $((now - start)) -ge "$timeout" ] && { echo "TIMEOUT (${timeout}s)"; return 1; }
-    sleep 2
+    local lm now age; lm="$(_lmtime)"; now=$(date +%s); age=$((now - lm))
+    [ "$age" -ge "$quiet" ] && { echo "IDLE"; return 0; }
+    if [ $((now - start)) -ge "$timeout" ]; then
+      echo "TIMEOUT (${timeout}s 経過): 画面の最終更新は ${age}s 前。"
+      if [ "$age" -lt "$quiet" ]; then
+        echo "  → まだ処理中 (画面が動いている)。長いターンなので --timeout を延ばして再 wait を。"
+      else
+        echo "  → 画面が止まっているのに idle 未検知。想定外なので実状態を確認 (下に画面末尾)。"
+      fi
+      echo "  --- 画面末尾 ---"
+      cmd_log "$name" 2>/dev/null | tail -8
+      return 1
+    fi
+    sleep 1
   done
 }
 
@@ -139,7 +153,7 @@ cmd_stop() {
   for i in $(seq 1 20); do [ -z "$(alive_pids)" ] && break; sleep 0.5; done
   local left; left="$(alive_pids)"
   [ -n "$left" ] && kill -9 $left 2>/dev/null || true
-  rm -f "$STATE/$name.pipe" "$STATE/$name.log" "$pidf" "$STATE/$name.dir"
+  rm -f "$STATE/$name.pipe" "$STATE/$name.log" "$pidf"
   echo "stopped & cleaned '$name'"
 }
 
