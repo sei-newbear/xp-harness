@@ -7,6 +7,7 @@ apm.lock.yaml
 # 以下は本物ファイルで git tracked なので除外
 # - philosophy: 中核思想 skill (改修者向け)
 # - release: リリース手順 skill (改修者向け)
+# - announce-release: リリース周知テキスト生成 skill (改修者向け)
 # - skill-design-style: skill 設計の流儀 skill (改修者向け)
 # - harness-verification: harness 検証手順 skill (改修者向け)
 # - kanban: 改修バックログかんばん skill (改修者向け)
@@ -16,6 +17,7 @@ apm.lock.yaml
 .claude/skills/*
 !.claude/skills/philosophy/
 !.claude/skills/release/
+!.claude/skills/announce-release/
 !.claude/skills/skill-design-style/
 !.claude/skills/harness-verification/
 !.claude/skills/kanban/
