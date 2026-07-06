@@ -102,8 +102,11 @@ cmd_wait_idle() {
     sleep 1
   done
   if [ "$started" = 0 ]; then
-    echo "NOSTART (15s 待っても画面が更新されない。send が submit されていない可能性 → printf '\\r' で再送信してから wait-idle を)"
-    return 2
+    # 起動時から画面が静止 = 既に idle。これは「ターンが速く完了して既に入力待ち」か「send が未着手」の
+    # どちらか。log-mtime だけでは両者を区別できないので、IDLE として返しつつ注意を添える (呼ぶ側は
+    # log 末尾で『ターンの結果 / メニュー』が出ているか、『未送信の自分のプロンプト』が残っているかを見る)。
+    echo "IDLE (画面が起動時から静止。ターン完了済みで入力待ち、または send 未着手のいずれか → log 末尾で中身を確認。未送信なら printf '\\r' > <name>.pipe で再送信)"
+    return 0
   fi
   # idle (画面が quiet 秒更新なし) を待つ。timeout 超過で「状態つき TIMEOUT」を返し、放置でなく呼ぶ側を引き戻す。
   while :; do
