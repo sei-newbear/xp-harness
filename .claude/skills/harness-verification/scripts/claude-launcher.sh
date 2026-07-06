@@ -20,7 +20,7 @@ Usage:
                                            session-id 指定で --resume 再開 (クラッシュ後の復帰に使う)
   claude-launcher.sh send   <name> <text>  プロンプト送信 (dialog 閉じ + クリア + Enter で submit 保証)
   claude-launcher.sh wait-idle <name> [--timeout N]
-                                           pty 画面(log)の mtime が quiet 秒(固定4)更新されなければ IDLE
+                                           pty 画面(log)の mtime が quiet 秒(固定6)更新されなければ IDLE
                                            (処理中はスピナーが画面を書き続ける)。始まらなければ NOSTART。
                                            --timeout はターンの重さに応じて呼ぶ側が指定(既定300s)。超過で
                                            「まだ処理中 / 想定外停止」を切り分けた状態つき TIMEOUT を返す。
@@ -78,9 +78,10 @@ cmd_send() {
 cmd_wait_idle() {
   local name="$1"; shift || true
   # idle 判定閾 (quiet) は固定。処理中/idle を分けるのは「画面が animate しているか」で、
-  # これは Claude Code の描画性質でタスクに依らず一定なので固定でよい (実測: 作業中 staleness ≤2s)。
+  # これは Claude Code の描画性質でタスクに依らず一定なので固定でよい。値は実測に基づく:
+  # 重い作業 (サブエージェント複数+生成) の stress で作業中ポーズは最大 2s、そこに 4s の余裕を取り 6s。
   # timeout はターンの正当な総時間 (タスク依存) の網なので呼ぶ側が指定する。
-  local quiet=4 timeout=300
+  local quiet=6 timeout=300
   while [ $# -gt 0 ]; do
     case "$1" in
       --timeout) timeout="$2"; shift 2;;
