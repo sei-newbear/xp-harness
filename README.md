@@ -2,17 +2,30 @@
 
 Claude Code に XP スタイルの開発リズムを注入する harness。新機能を依頼すると「なぜ作るのか」から確認し、要件定義 → 基本設計 → 実装フェーズを明示的に踏んで進む。実装フェーズは TDD サイクルで自走し、レビュー系 subagent がペアプロ相手として独立した視点を与える。
 
-現状 **Claude Code 専用**。APM (Microsoft Agent Package Manager) で配布。
+**Claude Code** と **Codex** に対応。APM (Microsoft Agent Package Manager) で配布。Codex 対応は導入初期で、skill の自動発火・subagent 委譲・hook 起動を実環境で確認している段階。
 
 ## Install
 
 APM CLI 未 install の場合は [公式 Quickstart](https://microsoft.github.io/apm/quickstart/) を参照。
+
+### Claude Code
 
 ```bash
 apm install sei-newbear/xp-harness#v0.13.0 --target claude
 ```
 
 Claude Code は instruction を `.claude/rules/` から直接読むため、**`apm install` だけで完結する**。`apm compile` は不要。
+
+### Codex
+
+```bash
+apm install sei-newbear/xp-harness#v0.13.0 --target codex
+apm compile --target codex
+```
+
+Codex は skill を `.agents/skills/`、subagent を `.codex/agents/`、hook を `.codex/hooks.json` から読み、これらは `apm install` が配置する。ただし中央の運用ルールは Codex では `AGENTS.md` に載る形式で、これは `apm compile --target codex` が生成する。そのため Codex では **install に加えて compile が要る**（Claude Code で compile が不要なのは Claude が `.claude/rules/` を直接読むため。Codex の native な中央機構が `AGENTS.md` である点が違う）。
+
+`apm compile --target codex` が書き出すのは `AGENTS.md` と `.codex/` のみ。生成された `AGENTS.md` はコミットするか、`.gitignore` に入れて各環境で再生成する。
 
 ### 既存 CLAUDE.md について
 

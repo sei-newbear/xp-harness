@@ -158,7 +158,8 @@ skill の frontmatter `description` は「9 割の skill 発火失敗は descrip
 
 `name` フィールドの扱い (= 公式 docs に基づく):
 
-- **skill** (`.apm/skills/<dir>/SKILL.md` / `.claude/skills/<dir>/SKILL.md`): `name` は **省略する** (= ディレクトリ名がデフォルトで使われる、明示は重複管理になる)
+- **配布 skill** (`.apm/skills/<dir>/SKILL.md` および `.claude/` 配下の対応 symlink): `name` を **明示する (= ディレクトリ名と一致させる)**。Claude Code 単体なら省略してもディレクトリ名がデフォルトになるが、**cross-agent 配布先 (Codex 等) は SKILL.md の `name` を必須とし、無いと skill がロードされない (ディレクトリ名へのフォールバックが無い)**。配布物は複数エージェントで動くので、ディレクトリ名と重複してでも明示する。ディレクトリを改名するときは `name` も追随させる (重複を受け入れた分、ずれる経路が増える)
+- **改修者向けの Claude 専用 skill** (git-tracked の `.claude/skills/<dir>/`、例: philosophy / skill-design-style / release): `name` は **省略でよい** (Codex に配布されず Claude Code でしか読まれないので、ディレクトリ名デフォルトで足り、重複管理を避ける)
 - **subagent** (`.apm/agents/<file>.md` / `.claude/agents/<file>.md`): `name` は **必須** (= 公式 docs で required、ファイル名と一致させる必要はないが明示する)
 
 Good 例:

@@ -7,6 +7,7 @@ author: sei-newbear
 # Accepted values: copilot, claude, cursor, opencode, codex, gemini, windsurf, all
 targets:
 - claude
+- codex
 dependencies:
   apm: []
   mcp: []
