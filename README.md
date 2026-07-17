@@ -2,7 +2,7 @@
 
 Claude Code に XP スタイルの開発リズムを注入する harness。新機能を依頼すると「なぜ作るのか」から確認し、要件定義 → 基本設計 → 実装フェーズを明示的に踏んで進む。実装フェーズは TDD サイクルで自走し、レビュー系 subagent がペアプロ相手として独立した視点を与える。
 
-**Claude Code** と **Codex** に対応。APM (Microsoft Agent Package Manager) で配布。Codex 対応は導入初期で、skill の自動発火・subagent 委譲・hook 起動を実環境で確認している段階。
+**Claude Code** / **Codex** / **Cursor** に対応。APM (Microsoft Agent Package Manager) で配布。Codex / Cursor 対応は導入初期で、skill の自動発火・subagent 委譲・hook 起動を実環境で確認している段階。
 
 ## Install
 
@@ -28,6 +28,14 @@ Codex は skill を `.agents/skills/`、subagent を `.codex/agents/`、hook を
 `apm compile --target codex` が書き出すのは `AGENTS.md` と `.codex/` のみ。生成された `AGENTS.md` はコミットするか、`.gitignore` に入れて各環境で再生成する。
 
 > **注意: `apm compile` は `AGENTS.md` を APM が所有・上書きする**（生成物末尾に「Do not edit manually」が付く）。既に手書きの `AGENTS.md` があるプロジェクトで compile を走らせると、その内容は失われる。プロジェクト固有のルールは `.apm/instructions/` 配下に置くこと — compile はそこに置いた instruction と xp-harness の運用ルールを**マージ**して `AGENTS.md` を生成する。既存の手書き `AGENTS.md` を活かす場合は、中身を `.apm/instructions/` に移してから compile する。
+
+### Cursor
+
+```bash
+apm install sei-newbear/xp-harness#v0.13.0 --target cursor
+```
+
+Cursor は skill を `.agents/skills/`（Codex と共通）、subagent を `.cursor/agents/`、hook を `.cursor/hooks.json`、中央の運用ルールを `.cursor/rules/main.mdc` から読み、これらはすべて `apm install` が配置する。Cursor は `.cursor/rules/` を直読みするため、Claude Code と同じく **`apm install` だけで完結し `apm compile` は不要**（Codex のような `AGENTS.md` 上書きの心配もない）。
 
 ### 既存 CLAUDE.md について
 
