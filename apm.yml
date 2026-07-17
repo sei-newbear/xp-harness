@@ -8,6 +8,7 @@ author: sei-newbear
 targets:
 - claude
 - codex
+- cursor
 dependencies:
   apm: []
   mcp: []
