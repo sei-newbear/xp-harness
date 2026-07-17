@@ -1,4 +1,5 @@
 ---
+name: harness-verification
 description: xp-harness の skill / subagent が意図どおり振る舞えているか (発火するか・あるべき振る舞いができているか) を transcript で事実確認する手順。skill / subagent を改修した後に sandbox で動作検証したいとき、または本番の実運用セッションを「あるべき振る舞い」に照らして分析したいとき、「検証したい」「発火するか確かめたい」「このセッションを分析したい」と言われたときに発火させる。できている / できていないの事実確認に限定。
 ---
 

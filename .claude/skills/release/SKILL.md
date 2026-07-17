@@ -1,4 +1,5 @@
 ---
+name: release
 description: xp-harness の version を上げて GitHub Release を作る開発者向け skill。現バージョン確認 → 次バージョン判定 (semver) → 変更内容のユーザー向け / 開発者向け分類 → tag + push → gh release create までの流れを定義。「リリースする」「タグを打つ」「v0.x.x をリリース」と明示されたときに発火。
 ---
 

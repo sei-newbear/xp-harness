@@ -1,4 +1,5 @@
 ---
+name: skill-design-style
 description: xp-harness の skill / agent に関する作業 (新規作成 / 設計 / 改修 等) で必ず発火させる、skill 設計の流儀 (構造 / 境界原則 / description の書き方) と判断軸。
 ---
 
@@ -158,8 +159,7 @@ skill の frontmatter `description` は「9 割の skill 発火失敗は descrip
 
 `name` フィールドの扱い (= 公式 docs に基づく):
 
-- **配布 skill** (`.apm/skills/<dir>/SKILL.md` および `.claude/` 配下の対応 symlink): `name` を **明示する (= ディレクトリ名と一致させる)**。Claude Code 単体なら省略してもディレクトリ名がデフォルトになるが、**cross-agent 配布先 (Codex 等) は SKILL.md の `name` を必須とし、無いと skill がロードされない (ディレクトリ名へのフォールバックが無い)**。配布物は複数エージェントで動くので、ディレクトリ名と重複してでも明示する。ディレクトリを改名するときは `name` も追随させる (重複を受け入れた分、ずれる経路が増える)
-- **改修者向けの Claude 専用 skill** (git-tracked の `.claude/skills/<dir>/`、例: philosophy / skill-design-style / release): `name` は **省略でよい** (Codex に配布されず Claude Code でしか読まれないので、ディレクトリ名デフォルトで足り、重複管理を避ける)
+- **skill** (`.apm/skills/<dir>/SKILL.md` / `.claude/skills/<dir>/SKILL.md`、配布・改修者向けを問わず): `name` を **明示する (= ディレクトリ名と一致させる)**。直接の理由は cross-agent 配布先 (Codex 等) が SKILL.md の `name` を必須とし、無いと skill がロードされないこと (ディレクトリ名へのフォールバックが無い)。Claude Code 単体なら省略してもディレクトリ名がデフォルトになるが、**配布されない改修者向け skill も含めて全 skill で揃える** — 有無が揃っている方がルールが単純で (「skill は name = ディレクトリ名」の一本)、「なぜこれだけ付いていないのか」の迷いや視覚的な不整合を生まない (一貫性 > 重複回避)。ディレクトリを改名するときは `name` も追随させる
 - **subagent** (`.apm/agents/<file>.md` / `.claude/agents/<file>.md`): `name` は **必須** (= 公式 docs で required、ファイル名と一致させる必要はないが明示する)
 
 Good 例:
