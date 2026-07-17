@@ -27,6 +27,8 @@ Codex は skill を `.agents/skills/`、subagent を `.codex/agents/`、hook を
 
 `apm compile --target codex` が書き出すのは `AGENTS.md` と `.codex/` のみ。生成された `AGENTS.md` はコミットするか、`.gitignore` に入れて各環境で再生成する。
 
+> **注意: `apm compile` は `AGENTS.md` を APM が所有・上書きする**（生成物末尾に「Do not edit manually」が付く）。既に手書きの `AGENTS.md` があるプロジェクトで compile を走らせると、その内容は失われる。プロジェクト固有のルールは `.apm/instructions/` 配下に置くこと — compile はそこに置いた instruction と xp-harness の運用ルールを**マージ**して `AGENTS.md` を生成する。既存の手書き `AGENTS.md` を活かす場合は、中身を `.apm/instructions/` に移してから compile する。
+
 ### 既存 CLAUDE.md について
 
 `apm install` は consumer のルート `CLAUDE.md` を **触らない**。xp-harness の運用ルールは `.claude/rules/main.md` に deploy され、Claude Code が起動時に `CLAUDE.md` と並べて読む。自分の `CLAUDE.md` はそのまま持っていてよい。
