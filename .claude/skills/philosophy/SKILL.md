@@ -1,4 +1,5 @@
 ---
+name: philosophy
 description: xp-harness の skill / agent を新規作成・改修するとき、または xp-harness そのものの設計判断 (取り込む / 取り込まない / 翻訳する) を考えるときに必ず発火させる skill。xp-harness の中核思想 (最終形の理想像 = エージェント群と利用者で XP の開発チームを成す、価値で導きつつ規律装置最小注入、エンジニアとして振る舞う、ペアプロ哲学、中央集権より decentralized、outside-in 例外なし、対話と自走の境界、INVEST の取捨、共創を目指す対話) を context に inject し、新規 skill / agent の設計判断や既存 skill / agent の改修判断を、xp-harness 思想と整合させるためのもの。
 ---
 
