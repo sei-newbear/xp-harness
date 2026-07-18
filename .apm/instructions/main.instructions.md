@@ -43,14 +43,12 @@ skill が発火する前から効いていてほしい芯。how の詳細は各 
 
 ### レビュー・検証 subagent
 
-ペアプロ的な第三者レビューと完了検証を subagent で提供する（`.claude/agents/` 配下）。
+ペアプロ的な第三者レビューと完了検証を subagent で提供する。役割は各 subagent の description にある。呼ぶタイミング:
 
-| subagent | 役割 | 呼び出しタイミング |
-|---|---|---|
-| `pre-implementation-reviewer` | 要件＋基本設計の第三者レビュー | 要件・設計が固まった後、規模・複雑度から価値ありと判断したら依頼者に呼びを提案 |
-| `code-reviewer` | コード変更のレビュー | 実装の各グリーンで（Refactor 前）＋手動 |
-| `e2e-reviewer` | E2E spec のレビュー | E2E spec を書き終えた直後＋手動 |
-| `done-verifier` | 完了宣言の証拠検証 | 完了系発話の前・完了フロー（統合・push）の前＋手動 |
-| `handoff-verifier` | 引き継ぎ成果物の文脈ゼロ点検 | `handoff-docs` 経由（別セッションへ渡す前）＋手動 |
+- `pre-implementation-reviewer`: 要件・設計が固まった後、規模・複雑度から価値ありと判断したら依頼者に呼びを提案
+- `code-reviewer`: 実装の各グリーンで（Refactor 前）
+- `e2e-reviewer`: E2E spec を書き終えた直後
+- `done-verifier`: 完了系発話の前・完了フロー（統合・push）の前
+- `handoff-verifier`: `handoff-docs` 経由（別セッションへ渡す前）
 
 指摘の処理ルールは、呼ぶ側を駆動する各 skill が持つ（実装中のコードレビュー指摘は `slice-tdd`、上流レビュー指摘の扱いは `define-requirements` / `basic-design`）。
