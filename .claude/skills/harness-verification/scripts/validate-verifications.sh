@@ -1,5 +1,5 @@
 #!/bin/bash
-# 検証記録 (references/*.md) の format 点検。frontmatter 4キー + 2 section が必須。
+# 検証記録 (references/*.md) の format 点検。frontmatter 5キー + 2 section が必須。
 # 新規記録を足したら通す。format 違反があれば exit 1。
 set -o pipefail
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../references" && pwd)"
@@ -11,7 +11,7 @@ for f in "$DIR"/*.md; do
   n=$((n+1))
   errs=()
   head -1 "$f" | grep -qx -- '---' || errs+=("1行目が frontmatter 開始 '---' でない")
-  for k in 目的 対象 verdict 日付; do
+  for k in 目的 対象 verdict 日付 モデル; do
     grep -qE "^${k}: *[^ ]" "$f" || errs+=("ヘッダ '${k}:' が欠落 or 空")
   done
   grep -qE '^日付: *[0-9]{4}-[0-9]{2}-[0-9]{2}' "$f" || errs+=("日付が YYYY-MM-DD 形式でない")

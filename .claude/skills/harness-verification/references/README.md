@@ -11,7 +11,7 @@ harness-verification で回した検証を、**サンドボックスを残さず
 - 検索: `../scripts/find-verifications.sh`
 - format 点検: `../scripts/validate-verifications.sh`（新規記録を足したら通す）
 
-## フォーマット（frontmatter の 4 キー ＋ 2 section が必須）
+## フォーマット（frontmatter の 5 キー ＋ 2 section が必須）
 
 ```markdown
 ---
@@ -19,6 +19,7 @@ harness-verification で回した検証を、**サンドボックスを残さず
 対象: <skill 名 / 変更名>
 verdict: <PASS / 揺らぎ / FAIL / 混在 など、一行>
 日付: <YYYY-MM-DD>
+モデル: <検証セッション (main session) の正確な model ID。transcript の assistant メッセージから確認する (例: claude-sonnet-5)。UI 表示名や alias でなく ID で書く。シナリオでモデルを分けたら「シナリオ名=ID」で列挙>
 ---
 
 # <タイトル>
@@ -33,4 +34,6 @@ verdict: <PASS / 揺らぎ / FAIL / 混在 など、一行>
 <発火・振る舞い・verdict の根拠を inline で。docs/working へのリンクに依存しない>
 ```
 
-frontmatter の 4 キーと `## 条件` `## 結果` の 2 section が validate の必須項目。
+frontmatter の 5 キーと `## 条件` `## 結果` の 2 section が validate の必須項目。
+
+モデルを必須にする理由: 発火・振る舞いはモデル依存で、上位モデルは弱い description を推論で補ってしまう（= 同じ検証でもモデルが違えば別の結果になりうる）。記録にモデルが無いと後から比較・再現できない。

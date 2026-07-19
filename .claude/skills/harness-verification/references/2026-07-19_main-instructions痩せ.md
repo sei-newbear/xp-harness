@@ -3,6 +3,7 @@
 対象: main.instructions.md ゼロベース再構成 (164→54 行, v0.15.0)
 verdict: 回帰なし PASS (付随: story-slicing 発火は新旧とも揺らぎ=痩せ非依存)
 日付: 2026-07-19
+モデル: 未記録 (モデル記録の必須化前。当時の環境既定で実行)
 ---
 
 # main.instructions.md 痩せ版の発火・振る舞い検証
