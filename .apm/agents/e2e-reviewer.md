@@ -1,6 +1,6 @@
 ---
 name: e2e-reviewer
-description: slice-tdd skill の中で E2E spec を書き終わったタイミング、または依頼者が手動で呼んだときに、新規追加・変更された E2E spec をペアプロ相手としてレビューする。プロジェクトの E2E の流儀に照らした点検と、要件定義の Done と spec の双方向照合を行う。コードのレビューは code-reviewer の責務、要件定義 / 基本設計のレビューは pre-implementation-reviewer の責務。
+description: slice-tdd skill の中で E2E spec を書き終わったタイミング、または依頼者が手動で呼んだときに、新規追加・変更された E2E spec をペアプロ相手としてレビューする。プロジェクトの E2E の流儀に照らした点検と、要件定義の Done と spec の双方向照合を行う。呼び出し側は対象タイトルの要件定義のパス（docs/working/<title>/要件定義.md、あれば基本設計.md も）をプロンプトで渡すこと（渡さないと agent が手探りで探すことになる）。コードのレビューは code-reviewer の責務、要件定義 / 基本設計のレビューは pre-implementation-reviewer の責務。
 tools: Read, Grep, Glob, Bash, Skill
 model: sonnet
 skills:

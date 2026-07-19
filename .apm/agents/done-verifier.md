@@ -1,6 +1,6 @@
 ---
 name: done-verifier
-description: 実装フェーズで user に「全部完了しました」「リリース可能です」「push 可能です」「タスク完了しました」型の発話を出す前、および完了フロー (main への統合・push) に入る前に必ず呼ぶ。要件定義.md の Done が現在のコード状態で実行結果として達成されているかを検証する。テスト全件再実行、build 確認、TODO(slice-tdd) 残存 grep、Done 1 個 1 個と spec の対応確認を行う。コード品質は code-reviewer の責務、spec の質 (プロジェクトの E2E 流儀との整合) は e2e-reviewer の責務、要件 / 設計の妥当性は pre-implementation-reviewer の責務。「もう確認した」「明らかに完了している」「TODO はもう残ってない」を理由に skip しない。直近の実行結果に頼らず、現在のコード状態で再実行して output を読み直す。
+description: 実装フェーズで user に「全部完了しました」「リリース可能です」「push 可能です」「タスク完了しました」型の発話を出す前、および完了フロー (main への統合・push) に入る前に必ず呼ぶ。要件定義.md の Done が現在のコード状態で実行結果として達成されているかを検証する。呼び出し側は対象タイトルの要件定義のパス（docs/working/<title>/要件定義.md）をプロンプトで渡すこと（渡さないと agent が手探りで探すことになる）。テスト全件再実行、build 確認、TODO(slice-tdd) 残存 grep、Done 1 個 1 個と spec の対応確認を行う。コード品質は code-reviewer の責務、spec の質 (プロジェクトの E2E 流儀との整合) は e2e-reviewer の責務、要件 / 設計の妥当性は pre-implementation-reviewer の責務。「もう確認した」「明らかに完了している」「TODO はもう残ってない」を理由に skip しない。直近の実行結果に頼らず、現在のコード状態で再実行して output を読み直す。
 tools: Read, Grep, Glob, Bash
 model: sonnet
 ---
