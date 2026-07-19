@@ -1,17 +1,6 @@
 ---
 name: git-workflow
-description: |
-  コード変更を伴う依頼 / セッション開始 / Git 操作の話題、いずれかに該当したら他より先に必ず最初に使う skill。
-
-  (1) コード変更を伴う依頼: 機能追加・バグ修正・UI 調整・リファクタ・CSV / 帳票 / ロジック修正など、ファイルを 1 行でも書き換える前に。「〜したい / 〜直したい / 〜追加したい / 〜整えてほしい / 〜変えたい」など Git に無関係に見える依頼でも例外なし。
-
-  (2) セッション開始 / 作業再開: `/clear` 直後、新セッション最初のメッセージ、「今日もよろしく」「何から始めよう」「前回の続き」「戻ってきた」「状況把握から」など具体タスクが固まっていない場面でも必ず発火。
-
-  (3) Git 操作の話題: worktree / branch 作成・命名、pull / rebase、conflict 解決、push、PR 作成依頼、remote 同期確認、commit リズム、`gh` 不使用ルール。
-
-  役割: 現 branch / remote 同期 / working tree の確認、新 worktree / branch 提案、完了時の main 統合、push 規律、`gh` 禁止、project 固有ルールでの部分上書き対応。
-
-  発火しない: コードを読むだけの info 質問、Git / tool の概念学習質問、doc のサマリ依頼。
+description: Git 運用の規律 (branch / worktree 運用、commit / push / pull / rebase / conflict 解決、remote 同期、完了時の統合) を一元的に担う skill。コード変更を伴う依頼・セッション開始・Git 操作の話題のいずれかに該当したら、他より先に必ず最初に使う。ファイルを 1 行でも書き換える依頼なら Git に無関係に見えても発火し、セッション開始・作業再開 (「前回の続き」「何から始めよう」等) でも必ず発火する。発火しないのはコードを読むだけの質問、Git の概念学習質問、doc のサマリ依頼。project 固有ルールでの部分上書きに対応する。
 ---
 
 # Git Workflow — worktree / branch 運用と Git 操作規律
