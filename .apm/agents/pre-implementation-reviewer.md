@@ -1,6 +1,6 @@
 ---
 name: pre-implementation-reviewer
-description: 要件定義と基本設計（実装に入る前の上流フェーズの成果物）を、依頼者と main session のペア作業から完全に独立した第三者として批判的にレビューする。docs/working/<title>/要件定義.md と docs/working/<title>/基本設計.md が書き終わった段階で、依頼者または main session が呼ぶ。呼び出し側はレビュー対象の要件定義・基本設計のパスをプロンプトで渡すこと（渡さないと agent が手探りで探すことになる）。要件の妥当性、Why と解決策の整合、スコープの適切さ、設計判断の妥当性、アーキ・データモデル・シーケンスの抜け、E2E で検証可能な Done になっているか、を独立視点で点検する。実装フェーズの成果物（コード・spec）はレビューしない。それは code-reviewer / e2e-reviewer の責務。
+description: 要件定義と基本設計（実装前の上流フェーズの成果物）を、ペア作業から完全に独立した第三者として批判的にレビューする。両文書が書き終わった段階で依頼者または main session が呼ぶ。要件の妥当性、Why と解決策の整合、スコープ、設計判断、アーキ・データモデル・シーケンスの抜け、E2E で検証可能な Done かを点検する。呼び出し側はレビュー対象の要件定義・基本設計のパスをプロンプトで渡すこと。実装フェーズの成果物（コード・spec）は code-reviewer / e2e-reviewer の責務。
 tools: Read, Grep, Glob, Bash
 model: opus
 ---
