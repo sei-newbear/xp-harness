@@ -3,6 +3,7 @@
 対象: retrospective (feat/retrospective-knowledge-harvest, PR #20)
 verdict: PASS
 日付: 2026-07-19
+モデル: 未記録 (モデル記録の必須化前。当時の環境既定で実行)
 ---
 
 # retrospective 書き戻し候補の収穫 — 観測での無催促提示の検証

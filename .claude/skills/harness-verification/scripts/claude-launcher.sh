@@ -15,9 +15,11 @@ mkdir -p "$STATE"
 usage() {
   cat <<USAGE
 Usage:
-  claude-launcher.sh launch <name> [dir] [session-id]
+  claude-launcher.sh launch <name> [dir] [session-id] [--model <model>]
                                            起動 (dir 既定=\$PWD): claude --remote-control <name> を pty+FIFO で。
-                                           session-id 指定で --resume 再開 (クラッシュ後の復帰に使う)
+                                           session-id 指定で --resume 再開 (クラッシュ後の復帰に使う)。
+                                           --model で main session のモデルを pin (検証はモデル依存があるので
+                                           明示指定を推奨。実際に使われた model ID は transcript の記録が真)
   claude-launcher.sh send   <name> <text>  プロンプト送信 (dialog 閉じ + クリア + Enter で submit 保証)
   claude-launcher.sh wait-idle <name> [--timeout N]
                                            pty 画面(log)の mtime が quiet 秒(固定6)更新されなければ IDLE
@@ -40,7 +42,15 @@ USAGE
 require() { command -v "$1" >/dev/null || { echo "ERROR: '$1' が必要" >&2; exit 1; }; }
 
 cmd_launch() {
-  local name="$1" dir="${2:-$PWD}" session="${3:-}"
+  local name="$1"; shift
+  local dir="" session="" model=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --model) model="$2"; shift 2;;
+      *) if [ -z "$dir" ]; then dir="$1"; else session="$1"; fi; shift;;
+    esac
+  done
+  dir="${dir:-$PWD}"
   require script; require claude; require setsid
   local fifo="$STATE/$name.pipe"
   local log="$STATE/$name.log"
@@ -57,12 +67,15 @@ cmd_launch() {
   # session-id が渡されたら --resume で再開 (クラッシュ後の復帰など)
   local resume_opt=""
   [ -n "$session" ] && resume_opt="--resume $session"
-  setsid bash -c "cd '$dir' && exec script -qfc 'env -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID claude $resume_opt --remote-control $name --permission-mode auto' '$log' < '$fifo'" >/dev/null 2>&1 &
+  local model_opt=""
+  [ -n "$model" ] && model_opt="--model $model"
+  setsid bash -c "cd '$dir' && exec script -qfc 'env -u CLAUDE_CODE_CHILD_SESSION -u CLAUDE_CODE_SESSION_ID claude $resume_opt $model_opt --remote-control $name --permission-mode auto' '$log' < '$fifo'" >/dev/null 2>&1 &
   local spid=$!
   echo "$hpid $spid" > "$pidf"
   echo "launched '$name' (dir=$dir)"
   echo "  log : $log"
-  echo "  起動まで数秒。'claude-launcher.sh log $name' で 'Remote Control active' を確認 → モバイルから接続可"
+  echo "  起動まで数秒。'claude-launcher.sh log $name' で remote-control の active 表示を確認 → モバイルから接続可"
+  echo "  (画面文言は version で変わる。空白は pty のカーソル移動で潰れるため 'remote.control.*active' のような空白非依存の grep で見る)"
 }
 
 cmd_send() {
