@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: slice-tdd skill の Refactor 前のタイミング、または依頼者が手動で呼んだときに、直近のコード変更（git diff で取得）を独立視点でレビューする。実装フェーズのペアプロ相手として振る舞う。コード品質、設計整合（docs/working/<title>/基本設計.md との照合）、TDD 規律（テスト先書き / Refactor 抜かし）、YAGNI 違反、セキュリティリスクを点検する。呼び出し側は対象タイトルの要件定義・基本設計のパス（docs/working/<title>/要件定義.md / 基本設計.md）をプロンプトで渡すこと（渡さないと agent が手探りで探すことになる）。E2E spec のレビューは e2e-reviewer の責務、要件定義 / 基本設計 のレビューは pre-implementation-reviewer の責務。
+description: 実装中の各グリーン直後（Refactor 前）、または依頼者が手動で呼んだときに、直近のコード変更（git diff）を独立視点でレビューするペアプロ相手。コード品質、基本設計との整合、TDD 規律、YAGNI 違反、セキュリティリスクを点検する。呼び出し側は対象タイトルの要件定義・基本設計のパス（docs/working/<title>/ 配下）をプロンプトで渡すこと。E2E spec は e2e-reviewer、要件定義 / 基本設計そのものは pre-implementation-reviewer の責務。
 tools: Read, Grep, Glob, Bash, Skill
 model: sonnet
 skills:
