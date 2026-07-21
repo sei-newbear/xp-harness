@@ -11,7 +11,7 @@ APM CLI 未 install の場合は [公式 Quickstart](https://microsoft.github.io
 ### Claude Code
 
 ```bash
-apm install sei-newbear/xp-harness#v0.16.0 --target claude
+apm install sei-newbear/xp-harness#v0.17.0 --target claude
 ```
 
 Claude Code は instruction を `.claude/rules/` から直接読むため、**`apm install` だけで完結する**。`apm compile` は不要。
@@ -19,7 +19,7 @@ Claude Code は instruction を `.claude/rules/` から直接読むため、**`a
 ### Codex
 
 ```bash
-apm install sei-newbear/xp-harness#v0.16.0 --target codex
+apm install sei-newbear/xp-harness#v0.17.0 --target codex
 apm compile --target codex
 ```
 
@@ -32,7 +32,7 @@ Codex は skill を `.agents/skills/`、subagent を `.codex/agents/`、hook を
 ### Cursor
 
 ```bash
-apm install sei-newbear/xp-harness#v0.16.0 --target cursor
+apm install sei-newbear/xp-harness#v0.17.0 --target cursor
 ```
 
 Cursor は skill を `.agents/skills/`（Codex と共通）、subagent を `.cursor/agents/`、hook を `.cursor/hooks.json`、中央の運用ルールを `.cursor/rules/main.mdc` から読み、これらはすべて `apm install` が配置する。Cursor は `.cursor/rules/` を直読みするため、Claude Code と同じく **`apm install` だけで完結し `apm compile` は不要**（Codex のような `AGENTS.md` 上書きの心配もない）。
@@ -145,8 +145,8 @@ apm outdated
 
 ```bash
 # 1. apm.yml の dependencies.apm の該当行を編集
-#    - sei-newbear/xp-harness#v0.15.0
-#    + sei-newbear/xp-harness#v0.16.0
+#    - sei-newbear/xp-harness#v0.16.0
+#    + sei-newbear/xp-harness#v0.17.0
 
 # 2. install 実行
 apm install --target claude
