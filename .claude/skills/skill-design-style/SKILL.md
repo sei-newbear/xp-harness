@@ -162,6 +162,16 @@ skill の frontmatter `description` は「9 割の skill 発火失敗は descrip
 - **skill** (`.apm/skills/<dir>/SKILL.md` / `.claude/skills/<dir>/SKILL.md`、配布・改修者向けを問わず): `name` を **明示する (= ディレクトリ名と一致させる)**。直接の理由は cross-agent 配布先 (Codex 等) が SKILL.md の `name` を必須とし、無いと skill がロードされないこと (ディレクトリ名へのフォールバックが無い)。Claude Code 単体なら省略してもディレクトリ名がデフォルトになるが、**配布されない改修者向け skill も含めて全 skill で揃える** — 有無が揃っている方がルールが単純で (「skill は name = ディレクトリ名」の一本)、「なぜこれだけ付いていないのか」の迷いや視覚的な不整合を生まない (一貫性 > 重複回避)。ディレクトリを改名するときは `name` も追随させる
 - **subagent** (`.apm/agents/<file>.md` / `.claude/agents/<file>.md`): `name` は **必須** (= 公式 docs で required、ファイル名と一致させる必要はないが明示する)
 
+`name` に付ける語形 (= 公式 docs の Naming conventions に基づく):
+
+- 形式の制約: 小文字・数字・ハイフンのみ、最大 64 字。`anthropic` / `claude` は予約語で使えない
+- 公式の第一推奨は **動名詞形** (= verb + -ing、`processing-pdfs` / `analyzing-spreadsheets`)。ただし **名詞句** (`pdf-processing`) と **動詞形** (`process-pdfs`) も「使ってよい代替」として明記されている
+- 公式は同じ項で **自分の skill 群の中で形を揃えること** も求めている (= 揃っていない命名を Avoid 側に挙げている)
+- **xp-harness は名詞句 / 動詞形で揃える** (= `slice-tdd` / `basic-design` / `story-slicing` / `define-requirements` / `git-workflow` の既存に合わせる)。第一推奨の動名詞形は採らない — 1 つだけ動名詞にすると「群の中で揃える」の方を外すため (公式が代替として認めている範囲に収まっている)
+- 避ける名前: 曖昧な名前 (`helper` / `utils` / `tools`)、汎用すぎる名前 (`documents` / `data` / `files`)
+
+参考: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices> の Naming conventions
+
 Good 例:
 
     description: Analyze Excel spreadsheets, create pivot tables, generate charts. Use when analyzing Excel files, spreadsheets, tabular data.
