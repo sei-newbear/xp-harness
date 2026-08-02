@@ -80,10 +80,11 @@ skill / agent の改修後は、必ず `skill-reviewer` subagent をペアプロ
 
 ## git-workflow の改修者向け上書き
 
-xp-harness の改修者環境では、`git-workflow` skill (= 配布側 skill) の以下のデフォルトを **上書き** する (= project の CLAUDE.md が skill のデフォルトより優先、`git-workflow` skill 本文の「Project 固有ルールでの上書き」section と整合):
+xp-harness の改修者環境では、`git-workflow` skill (= 配布側 skill) の以下のデフォルトを **上書き**、または配布側が探索に委ねている箇所を **補完** する (= project の CLAUDE.md が skill のデフォルトより優先、`git-workflow` skill 本文の「Project 固有ルールでの上書き」section と整合):
 
 - **`gh` コマンドの使用を許容する** (= デフォルトの「`gh` 不使用」を上書き)。改修者環境では `gh` がある前提
 - **Push / PR 作成は依頼者に確認を取ってから動く**。改修者 Agent が Push / PR 作成まで無断で自走しない。「Push してよいか」「PR 作成してよいか」を依頼者に確認してから実行する
+- **worktree を作ったら、その worktree のパスを指定して `scripts/setup-dev.sh` を流す** (= git-workflow の worktree 作成手順の 2 手目にあたる project 固有セットアップ)。流さないとその worktree で起動したセッションから skill / subagent が丸ごと見えなくなる (仕組みは後述の「Main instruction の取り込み」を参照)
 - **完了時の統合方法は利用者影響で切り分ける** (= git-workflow の「main へ統合が既定」を上書き)。**利用者影響がある変更** (= `.apm/` 配下の配布物に触れるもの) は main へ直接統合せず、branch を push して **PR を出しレビューを通す**。**利用者影響がない変更** (= 改修者向け `.claude/` 配下・`docs/`・`kanban/`・`CLAUDE.md` 等のみ) は main へ直接統合してよい
 
 この上書きは改修者向けのみ (= 本 `CLAUDE.md` は consumer 配布対象外)。配布側 skill (`.apm/skills/git-workflow/SKILL.md`) のデフォルトは変えず、consumer 環境では従来通り「PR 作成は依頼者の責務」「`gh` 不使用」が効く。

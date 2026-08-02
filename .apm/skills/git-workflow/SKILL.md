@@ -146,14 +146,16 @@ worktree の隔離は repo 単位なので、追加ディレクトリはそこ�
 
 repo の外 (兄弟階層) に置く理由: repo 内に作るとメイン側の `git status` に漏れて gitignore が必要になる。外部なら完全分離。`<repo名>-worktrees/` で束ねると複数 worktree が散らからず、丸ごと消せば掃除も簡単。
 
-作成と入り方は 2 手:
+作成と入り方は 3 手:
 
 1. `git worktree add -b <branch名> ../<repo名>-worktrees/<dir名>` — branch 付き worktree を外部に作る
-2. 作った worktree に入り、作業対象を移す (Claude Code では `EnterWorktree` の `path` 指定)
+2. **作った worktree のディレクトリを対象に**、project 固有のセットアップ手順 (依存インストール / 環境ファイルの用意 / 生成物の作成 等) を探して実行する。worktree には git 管理外のものが無いので、元 repo で揃っているものが揃っていない。この時点ではまだ元 repo にいるので、対象を明示せずに叩くと元 repo に対して実行してしまう (成功終了するが worktree には効かない)。見つからなければ何もしない (セットアップ手順をでっち上げない)
+3. 作った worktree に入り、作業対象を移す (Claude Code では `EnterWorktree` の `path` 指定)
 
 注意:
 
-- worktree の自動作成機構 (Claude Code では `EnterWorktree` の `name` 形式) は repo 内 (`.claude/worktrees/`) に作られてしまうので**使わない**。必ず上記の 2 手
+- **セットアップを飛ばすと、その worktree で起動したセッションから設定が丸ごと落ちることがある** (= agent の skill / subagent 定義を git 管理外で生成する構成が典型)。元 repo から起動して入り直す使い方では元 repo 側の設定が見え続けるので気づけない (Claude Code で確認: 設定の解決元はセッション起動時のディレクトリで、入り直しても移らない)
+- worktree の自動作成機構 (Claude Code では `EnterWorktree` の `name` 形式) は repo 内 (`.claude/worktrees/`) に作られてしまうので**使わない**。必ず上記の 3 手
 - worktree に入ると repo ルートに着地する (サブディレクトリ着地は不可)
 - 別の worktree に移るときは、いったんメインに戻ってから入り直す (直接の乗り換えは不可)
 
