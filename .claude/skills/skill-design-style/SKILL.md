@@ -157,11 +157,6 @@ skill の frontmatter `description` は「9 割の skill 発火失敗は descrip
 - 具体ツール / API 名を避ける (= 原則 1 と整合): framework 非依存な表現で書く
 - description が短く済まない場合、`when_to_use` frontmatter field を使う選択肢もある (Claude Code 固有)
 
-`name` フィールドの扱い (= 公式 docs に基づく):
-
-- **skill** (`.apm/skills/<dir>/SKILL.md` / `.claude/skills/<dir>/SKILL.md`、配布・改修者向けを問わず): `name` を **明示する (= ディレクトリ名と一致させる)**。直接の理由は cross-agent 配布先 (Codex 等) が SKILL.md の `name` を必須とし、無いと skill がロードされないこと (ディレクトリ名へのフォールバックが無い)。Claude Code 単体なら省略してもディレクトリ名がデフォルトになるが、**配布されない改修者向け skill も含めて全 skill で揃える** — 有無が揃っている方がルールが単純で (「skill は name = ディレクトリ名」の一本)、「なぜこれだけ付いていないのか」の迷いや視覚的な不整合を生まない (一貫性 > 重複回避)。ディレクトリを改名するときは `name` も追随させる
-- **subagent** (`.apm/agents/<file>.md` / `.claude/agents/<file>.md`): `name` は **必須** (= 公式 docs で required、ファイル名と一致させる必要はないが明示する)
-
 Good 例:
 
     description: Analyze Excel spreadsheets, create pivot tables, generate charts. Use when analyzing Excel files, spreadsheets, tabular data.
@@ -171,6 +166,20 @@ Bad 例:
     description: Use openpyxl to process spreadsheets
 
 参考: <https://platform.claude.com/docs/en/agents-and-tools/agent-skills/best-practices>
+
+`name` フィールドの扱い (= 公式 docs に基づく):
+
+- **skill** (`.apm/skills/<dir>/SKILL.md` / `.claude/skills/<dir>/SKILL.md`、配布・改修者向けを問わず): `name` を **明示する (= ディレクトリ名と一致させる)**。直接の理由は cross-agent 配布先 (Codex 等) が SKILL.md の `name` を必須とし、無いと skill がロードされないこと (ディレクトリ名へのフォールバックが無い)。Claude Code 単体なら省略してもディレクトリ名がデフォルトになるが、**配布されない改修者向け skill も含めて全 skill で揃える** — 有無が揃っている方がルールが単純で (「skill は name = ディレクトリ名」の一本)、「なぜこれだけ付いていないのか」の迷いや視覚的な不整合を生まない (一貫性 > 重複回避)。ディレクトリを改名するときは `name` も追随させる
+- **subagent** (`.apm/agents/<file>.md` / `.claude/agents/<file>.md`): `name` は **必須** (= 公式 docs で required、ファイル名と一致させる必要はないが明示する)
+
+#### skill の名前 (= ディレクトリ名 = frontmatter の `name`) の語形
+
+公式 docs の Naming conventions に基づく。**subagent の名前は対象外** (= `code-reviewer` / `done-verifier` のように役割を表す名詞で揃っている別系統)。
+
+- 公式の第一推奨は **動名詞が先頭に来る形** (= `processing-pdfs` / `analyzing-spreadsheets`)。名詞句 (`pdf-processing`) と動詞形 (`process-pdfs`) も代替として明記されている。**`story-slicing` のように後ろに `-ing` が来るものは、公式の分類では名詞句** (= `pdf-processing` と同型) なので採ってよい
+- **xp-harness が採らないのは動名詞先頭形だけ**。既存の名詞句と動詞形の混在 (= `basic-design` / `slice-tdd` / `define-requirements` 等) はそのまま許容する。理由は改名コスト — skill 名は利用者が直接呼ぶ入口で、instruction や他 skill 本文からも名指しされており、改名は呼び出しを壊す
+- 名前は **ディレクトリを切る時点で決まる**。frontmatter を書く段ではなく、作り始める前にこの語形を通す
+- 命名では「既存の群と揃っているか」自体が判断基準になる (= 下の手順 5 にある「既存例に引っ張られない」は description を書く場面の戒めで、命名には掛からない)
 
 #### subagent の description は長さで機械的に削らない
 
