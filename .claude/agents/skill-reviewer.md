@@ -58,10 +58,10 @@ main session が依頼者に確認する前に「自分の判断が偏ってい�
 - third person で書かれているか (「I can」「You can」禁止)
 - What + When の 2 層構成になっているか
 - Key use case が最初に置かれているか
-- 文字数の予算 (= 推奨 200-300 字、最大 1,024 字) を意識しているか
+- 文字数の予算を意識しているか (= skill は推奨 200-300 字 / 最大 1,024 字。subagent には公式の長さ推奨が無いので字数で機械的に削らず、呼ぶ側が委譲判断と正しい呼び方をするのに必要な情報が揃っているかで見る)
 - 具体ツール / API 名を避けて framework 非依存な表現になっているか
 - `name` フィールドの扱い:
-  - skill (`.apm/skills/<dir>/SKILL.md` / `.claude/skills/<dir>/SKILL.md`) の `name` は **省略されているか** (= ディレクトリ名がデフォルト、明示は重複管理)
+  - skill (`.apm/skills/<dir>/SKILL.md` / `.claude/skills/<dir>/SKILL.md`) の `name` は **明示され、ディレクトリ名と一致しているか** (= cross-agent 配布先が `name` を必須とするため。配布されない改修者向け skill も含めて全 skill で揃える)
   - subagent (`.apm/agents/<file>.md` / `.claude/agents/<file>.md`) の `name` は **明示されているか** (= 公式 docs で必須)
 
 ### 4. 出力前に立ち止まる規律を踏んでいるか

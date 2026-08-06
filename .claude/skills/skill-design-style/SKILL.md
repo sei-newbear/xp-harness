@@ -146,6 +146,15 @@ skill 本文から別の skill を使わせるときの 2 点 (実装 / E2E実�
 - **置き場所**: その skill が効く具体的な手順 (TDD の各ステップ等) に案内を置く。冒頭のまとめ section に置くと、skill 発火時に 1 回消費されて後の段で忘れられる (実証: slice-tdd 冒頭に「実装規約を呼べ」と置いたら、直後の E2E 段の skill は発火したが、後の実装段の skill が再トリガーされず漏れた)
 - **動詞**: 「参照する」でなく「**呼ぶ**」と書く。「参照」は main にファイルを Read させ、skill の補助ファイルを取りこぼす。「呼ぶ」は skill として発火させ、補助ファイルも含めて効かせる (subagent でも Skill tool で名指し skill を発火できることは検証済)
 
+#### 原則 5: 依存の向きは instruction → skill の一方向 (skill は instruction を知らない)
+
+instruction (= 常時効かせる芯) が skill を呼び、詳細を skill に委ねるのが依存の向き。逆向きはない。skill 本文は、呼び出し元の instruction に何が書かれているかを前提にしない (= skill 単体で読んで規律が揃っている状態を保つ)。
+
+- NG: 「instruction 側に同じ規律を書いたから、skill 本文からは省ける」という判断。skill が instruction の存在に依存し、skill 単体で読んだときに規律が欠ける (= 原則 2 の「展開後も自然に読める」と同じ向きの要請)
+- OK: instruction 側が芯だけを持ち、詳細は skill を呼んで取り込む形にする
+
+帰結として、**同じ規律が instruction と skill の両方にあるのは重複ではない**。層が違うので、それぞれの層で成立している正しい状態。重複を数えるときは層をまたいで数えない (= 「配布物全体で N 箇所に同じことが書かれている」という数え方は、依存の向きを見ていない)。重複として削る判断が成立するのは、同じ層の中で同じことが書かれているときだけ。
+
 ### 手順 4: description / name の書き方 (公式推奨)
 
 skill の frontmatter `description` は「9 割の skill 発火失敗は description の品質に起因」(Claude Code 公式) と言われる重要 field。以下を守る:
