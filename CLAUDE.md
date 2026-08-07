@@ -37,7 +37,7 @@ xp-harness は OSS として skill / agent / instruction を配布する harness
 | カテゴリ | パス | 配布 |
 |---|---|---|
 | **利用者向け** | `.apm/skills/*` / `.apm/agents/*` / `.apm/instructions/*` および `.claude/` 配下の対応 symlink (= `.apm/` と同じ実体) | APM 経由で配布 |
-| **改修者向け** | `CLAUDE.md` (project root) / `.claude/skills/philosophy/` / `.claude/skills/release/` / `.claude/skills/skill-design-style/` / `.claude/agents/skill-reviewer.md` (= それぞれ git tracked、symlink でない) | 非配布 |
+| **改修者向け** | `CLAUDE.md` (project root) / `.claude/skills/harness-verification/` / `.claude/skills/philosophy/` / `.claude/skills/release/` / `.claude/skills/skill-design-style/` / `.claude/agents/skill-reviewer.md` (= それぞれ git tracked、symlink でない) | 非配布 |
 
 判別法: `ls -la` で symlink でないことを確認。symlink なら `.apm/` 配下と同じものなので利用者向け、symlink でなく直接コミットされていれば改修者向け。
 
@@ -78,6 +78,14 @@ skill / agent の改修後は、必ず `skill-reviewer` subagent をペアプロ
 
 ---
 
+## harness-verification (= 振る舞いを transcript で事実確認する)
+
+skill / agent / instruction を改修しても、狙った振る舞いが出るかは **transcript を観測しないと分からない**。sandbox で動作検証するとき、**または** 既に走った本番の実運用セッションを「あるべき振る舞い」に照らして分析するときは、`harness-verification` skill を呼ぶ。
+
+検証条件の設計原則 (ノーヒント・反証可能性)、検証セッションの起動と駆動、transcript の解析、検証記録の残し方は、すべてこの skill が単一の出典として持つ。**同梱スクリプトだけを直接叩かない** — 本文を読まずに回すと、記録の format 点検や対話駆動の落とし穴を踏む (2026-08-02 の research-spike 改修で実際に踏んだ)。
+
+---
+
 ## git-workflow の改修者向け上書き
 
 xp-harness の改修者環境では、`git-workflow` skill (= 配布側 skill) の以下のデフォルトを **上書き**、または配布側が探索に委ねている箇所を **補完** する (= project の CLAUDE.md が skill のデフォルトより優先、`git-workflow` skill 本文の「Project 固有ルールでの上書き」section と整合):
@@ -95,11 +103,6 @@ xp-harness の改修者環境では、`git-workflow` skill (= 配布側 skill) �
 
 xp-harness 本体の main instruction (= consumer に配信される運用ルール) を改修者環境でも有効にするため、起動時に取り込む。改修者は `.apm/instructions/main.instructions.md` を直接編集すれば、Claude Code を再起動するだけで反映される (= build step なし)。
 
-`.apm/skills/` の各 skill と `.apm/agents/` の各 subagent は `scripts/setup-dev.sh` が `.claude/skills/<x>` / `.claude/agents/<x>.md` への symlink を作って認識させる。以下は **symlink でなく直接 git tracked** で対象外:
-
-- `.claude/skills/philosophy/` (= 中核思想 skill、改修者向け)
-- `.claude/skills/release/` (= リリース手順 skill、改修者向け)
-- `.claude/skills/skill-design-style/` (= skill 設計の流儀、改修者向け)
-- `.claude/agents/skill-reviewer.md` (= skill レビュー subagent、改修者向け)
+`.apm/skills/` の各 skill と `.apm/agents/` の各 subagent は `scripts/setup-dev.sh` が `.claude/skills/<x>` / `.claude/agents/<x>.md` への symlink を作って認識させる。**symlink でなく直接 git tracked** なもの (= 改修者向け) は対象外。一覧は上の「スコープ境界の判別」の表の改修者向け行が単一の出典。
 
 @.apm/instructions/main.instructions.md
