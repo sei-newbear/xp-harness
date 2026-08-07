@@ -80,7 +80,7 @@ skill / agent の改修後は、必ず `skill-reviewer` subagent をペアプロ
 
 ## harness-verification (= 振る舞いを transcript で事実確認する)
 
-skill / agent / instruction を改修しても、狙った振る舞いが出るかは **transcript を観測しないと分からない**。sandbox で動作検証するとき、**または** 既に走った本番の実運用セッションを「あるべき振る舞い」に照らして分析するときは、`harness-verification` skill を呼ぶ。
+skill / subagent / instruction を改修しても、狙った振る舞いが出るかは **transcript を観測しないと分からない**。動作検証するとき、**または** 既に走った本番の実運用セッションを「あるべき振る舞い」に照らして分析するときは、`harness-verification` skill を呼ぶ。
 
 検証条件の設計原則 (ノーヒント・反証可能性)、検証セッションの起動と駆動、transcript の解析、検証記録の残し方は、すべてこの skill が単一の出典として持つ。**同梱スクリプトだけを直接叩かない** — 本文を読まずに回すと、記録の format 点検や対話駆動の落とし穴を踏む (2026-08-02 の research-spike 改修で実際に踏んだ)。
 
