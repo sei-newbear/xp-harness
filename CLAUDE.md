@@ -63,7 +63,7 @@ skill / agent (`.apm/skills/<name>/SKILL.md` / `.apm/agents/<name>.md` / `.claud
 - 境界原則 3 つ (= description は interface / 本文は consumer 展開後も自然 / 発火条件と振る舞いを混ぜない)
 - description の書き方 (= 公式推奨、third person / What+When / Key use case 最初 / 文字数推奨)
 - 出力前に立ち止まる (= 機械的処理に流れる失敗の認識)
-- skill 改修フロー (= 4 軸判断 → 構造踏まえる → 境界原則 → description → 立ち止まる → skill-reviewer に通す → 対話なら dialogue-principles)
+- skill 改修フロー (= 4 軸判断 → 構造踏まえる → 境界原則 → description → 立ち止まる → skill-reviewer に通す → 挙動に効くなら harness-verification → 対話なら dialogue-principles)
 - 既存 reviewer subagent との責務切り分け
 
 @.claude/skills/skill-design-style/SKILL.md
