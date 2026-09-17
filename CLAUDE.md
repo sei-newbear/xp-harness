@@ -86,6 +86,12 @@ skill / subagent / instruction を改修しても、狙った振る舞いが出�
 
 ---
 
+## 調査記録の置き場所
+
+調査・スパイクの記録は `docs/research/` に置く (= git tracked、公開される)。公開リポジトリに出せない内容を含むものは `docs/private/` に置く (= `.gitignore` 済み、手元にだけ残り、履歴もバックアップも無い)。
+
+---
+
 ## git-workflow の改修者向け上書き
 
 xp-harness の改修者環境では、`git-workflow` skill (= 配布側 skill) の以下のデフォルトを **上書き**、または配布側が探索に委ねている箇所を **補完** する (= project の CLAUDE.md が skill のデフォルトより優先、`git-workflow` skill 本文の「Project 固有ルールでの上書き」section と整合):
