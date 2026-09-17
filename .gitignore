@@ -42,3 +42,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# git 管理外に残す調査記録 (公開リポジトリに出せない内容を手元に残すための置き場)
+docs/private/
