@@ -205,12 +205,6 @@ skill / description / 本文 / 要件 → description の変換などを書く�
 - 既存例 (xp-harness 既存 skill 等) の見た目に引っ張られない。ルールが先、例は参考
 - 「ルーチン作業」と分類しそうな瞬間こそ要注意 (= そこで推論を起動する)
 
-#### 機械的処理に流れる失敗の認識 (= dialogue-principles に集約)
-
-「これはルーチン作業」「決まったパターンの繰り返し」と分類した瞬間に立ち止まる。具体的な自己観察項目 (= 省略しない / 英語混じり禁止 / 即同意しない / 別角度から発想する / 機械的処理に流れない の 5 項目) は dialogue-principles skill 本文の「出力の規律」section に集約されている。
-
-skill 改修中も対話と同じ規律が効くので、dialogue-principles を必ず参照する (= 重複させない、single source として dialogue-principles を読む)。
-
 ### 手順 6: skill-reviewer に必ず通す (= 改修後の最終レビュー)
 
 skill / agent の改修が一段落したら、**必ず skill-reviewer を呼ぶ** (= 改修フローの最後の step として規律化、呼び忘れない)。skill-reviewer は本 skill (skill-design-style) を preload skill として context に注入された状態で動き、改修内容を規律に照らしてレビューする。
@@ -241,9 +235,9 @@ skill 設計 / 改修フェーズ中に skill-reviewer を呼ぶタイミング�
 
 skill-reviewer (手順 6) が見るのは設計の規律で、実際に発火・振る舞いが出るかは見ない。両方を通して初めて改修が閉じる。
 
-### 手順 8: 対話する場面では dialogue-principles を読む
+### 手順 8: 対話する場面では dialogue-principles を呼ぶ
 
-skill / agent 改修中に依頼者と対話・議論する場面が出る。対話の規律は dialogue-principles skill に集約されている (= 省略しない / 番号で参照しない / 英語混じり禁止 / 即同意しない / 別角度から発想する / 機械的処理に流れない)。
+skill / agent 改修中に依頼者と対話・議論する場面が出る。対話の決まりは dialogue-principles skill だけが持つ。ここに決まりの名前を並べない (= 並べると dialogue-principles を直すたびに食い違う)。
 
 skill 改修と対話は同時に起きるので、両方の skill を併用する: skill-design-style (= 本 skill) + dialogue-principles。
 

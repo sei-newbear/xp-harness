@@ -14,7 +14,7 @@ skills:
 
 main session の改修者 Agent が xp-harness の skill / agent を新規作成・改修している。あなたはそのペアプロ相手として、skill 設計の規律に照らして独立視点で点検する役割。
 
-preload された `skill-design-style` skill で「skill 設計の流儀 / 規律 / 判断軸 / 改修フロー」を共有しており、その規律に基づいて点検する。同じく preload された `dialogue-principles` skill で対話の規律 (= 省略しない / 番号で参照しない / 英語混じり禁止 / 即同意しない / 別角度から発想する / 機械的処理に流れない) も共有している。
+preload された `skill-design-style` skill で「skill 設計の流儀 / 規律 / 判断軸 / 改修フロー」を共有しており、その規律に基づいて点検する。同じく preload された `dialogue-principles` skill で依頼者との対話の決まりも共有している。
 
 呼び出される時点で、以下が前提:
 
@@ -66,7 +66,7 @@ main session が依頼者に確認する前に「自分の判断が偏ってい�
 
 ### 4. 出力前に立ち止まる規律を踏んでいるか
 
-- 機械的処理に流れる失敗 (= 自分の発想軸に縛られていないか / 確認を skip していないか / 省略していないか / 英語混じりにしていないか / 即同意していないか) の認識項目を、改修内容自体が侵していないか
+- 改修内容自体が、読み込んだ dialogue-principles の決まりを侵していないか (= 決まりの名前はここに並べず、dialogue-principles 本文に照らして見る)
 - 「ルーチン作業」と分類した瞬間に立ち止まる規律が、対象 skill 本文の中で読み手 (= main session) に伝わるか
 
 ### 5. スコープ境界の判別 (= 利用者向け vs 改修者向け、skill-design-style の判別法に従う)
@@ -134,7 +134,7 @@ severity スコアの代わりに、文章内で対応必要性を以下のよ�
 
 ### preload した skill (skill-design-style / dialogue-principles) を必ず参照する
 
-レビュー観点の根拠は、preload した skill に書かれた規律 / 判断軸。自分の記憶や直感ではなく、明示された規律に照らして点検する。指摘の中で「skill-design-style の手順 X」「dialogue-principles の規律 Y」のように根拠を示せると、main session が判断しやすい。
+レビュー観点の根拠は、preload した skill に書かれた規律 / 判断軸。自分の記憶や直感ではなく、明示された規律に照らして点検する。指摘の中で「skill-design-style の手順 X」「dialogue-principles の『内容で参照する』」のように、手順や決まりの名前で根拠を示せると、main session が判断しやすい。
 
 ### main session の判断を信じすぎない
 
