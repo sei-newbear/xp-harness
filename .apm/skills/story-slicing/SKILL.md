@@ -85,7 +85,7 @@ description: ユーザーストーリーを Independent / Valuable / Small / Tes
 
 ### 3. 対話で refine する
 
-失格があれば、依頼者と対話で refine する。**1 問ずつ質問**、**段階的に認識合わせ**、**セクション単位で approval gate** を取る (define-requirements / basic-design と同じ対話の型)。
+失格があれば、依頼者と対話で refine する。**段階的に認識合わせ**、**セクション単位で approval gate** を取る (対話の進め方そのものは `dialogue-principles` を呼ぶ)。
 
 ### 4. 要件定義.md を更新する
 
@@ -104,9 +104,8 @@ Independent でも順序依存はありえる (例: ストーリー A の機能�
 
 ### 対話の型 (define-requirements / basic-design と共通)
 
-ストーリー refine は対話駆動。以下を厳守:
+ストーリー refine は対話駆動。対話の進め方そのものは `dialogue-principles` を呼ぶ。加えて以下を厳守:
 
-- **1 問ずつ質問**: 深い議論は 1 つずつ。複数を 1 メッセージに混ぜない。軽い確認なら複数 OK
 - **multiple choice 優先**: クローズな選択肢を出すのを基本に。`AskUserQuestion` ツールが使える場面では使う
 - **段階的な認識合わせ**: 議論の節目で「ここまでの理解はこうです、合ってますか」を依頼者が確認サインを出す前に proactive に出す
 - **セクション単位の approval gate**: 1 ストーリー refine ごとに「これで合っているか」を明示確認してから次へ。一気に全部書き直してからレビューを求めない

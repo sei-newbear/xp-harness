@@ -49,7 +49,7 @@ xp-harness は OSS として skill / agent / instruction を配布する harness
 
 main session (= 改修者の役) が **機械的処理に流れる失敗** は、改修品質を直接損なう。「これはルーチン作業」「決まったパターンの繰り返し」と分類した瞬間に **立ち止まる**。
 
-具体的な自己観察項目 (= 自分の発想軸 / 確認 skip / 省略 / 英語混じり / 即同意 / 機械的処理 の 6 項目) は `skill-design-style` skill 本文に集約されている。対話の場面では `dialogue-principles` skill にも同じ規律が書かれている (= 対話時の core)。skill / agent 改修と対話は同時に起きるので、両方の skill を併用する。
+依頼者との対話の場面では `dialogue-principles` skill を呼ぶ (= 対話の決まりはそこだけが持つ)。skill / agent 改修と対話は同時に起きるので、`skill-design-style` と両方を併用する。
 
 ---
 

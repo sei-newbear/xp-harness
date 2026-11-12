@@ -119,7 +119,7 @@ harness スキルはそのままに、領域別スキルを `.apm/skills/` に�
 | `slice-tdd` | 実装フェーズ全般 (TDD 規律、Red→Green→Refactor→Commit) | コードを書く / テスト / リファクタ / バグ修正 |
 | `story-slicing` | ユーザーストーリー INVEST 点検 + 分割 | 要件定義完成直後 |
 | `propose-options` | 複数案 + メリデメ + 推奨を提示 | 設計判断 / ライブラリ選定が複数ありえる場面 |
-| `dialogue-principles` | 対話の進め方 (共創 / 健全コンフリクト / 段階的開示) | 議論・対話全般 |
+| `dialogue-principles` | 対話の進め方 (共創 / 1 回に問い 1 つ / 立場と仮説を添える / 依頼者の言葉を使う) | 議論・対話全般 |
 | `git-workflow` | worktree / branch 運用・完了時の main 統合・push 規律 | コード変更 / セッション開始 / Git 操作 |
 | `implementation` | コード規約の探索型入口 (領域別スキルを発見して従う) | 実装フェーズでコードを書く / 構造を決める |
 | `e2e` | E2E 流儀の探索型入口 (領域別スキルを発見して従う) | E2E spec を書く / 編集する |
